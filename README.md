@@ -71,6 +71,47 @@ The application will be accessible at `http://localhost:8080`
 - `npm run lint` - Check code for linting errors
 - `npm run preview` - Preview production build locally
 
+## ☁️ Deployment
+
+### Deploy to Vercel
+
+The easiest way to deploy this application is to use [Vercel](https://vercel.com), a popular hosting platform for static sites and serverless functions.
+
+#### Prerequisites
+- A Vercel account ([sign up here](https://vercel.com/signup))
+- The Vercel CLI installed globally: `npm i -g vercel` (optional)
+
+#### Deployment Options
+
+**Option 1: Deploy from GitHub**
+1. Push your code to a GitHub repository
+2. Sign in to [Vercel](https://vercel.com/dashboard)
+3. Click "New Project" and import your repository
+4. Vercel will automatically detect the Vite configuration and deploy your site
+
+**Option 2: Deploy with Vercel CLI**
+1. Install the Vercel CLI: `npm i -g vercel`
+2. Run the following command in your project directory:
+```bash
+vercel
+```
+3. Follow the prompts to link your project and deploy
+
+**Option 3: Deploy from Vercel Dashboard**
+1. Visit [Vercel Import](https://vercel.com/import/git)
+2. Choose your Git provider and repository
+3. Configure your project settings:
+   - Framework Preset: Vite
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Development Command: `npm run dev`
+4. Deploy your project
+
+#### Environment Variables
+If your application uses environment variables (e.g., for Supabase), make sure to configure them in your Vercel project settings under Settings → Environment Variables.
+
+The project is configured with `vercel.json` to ensure correct deployment settings for a Vite React application.
+
 ## 🏗️ Project Structure
 
 ```
