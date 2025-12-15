@@ -1,4 +1,121 @@
-# React + TypeScript + Vite
+# MediFast Cameroon - Health Booking Care Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-# MediFast-Cameroon
+A comprehensive healthcare booking platform designed specifically for Cameroon to streamline hospital visits with efficient booking and emergency services.
+
+## 🚀 Features
+
+- **Symptom Checker**: Self-assessment tool to evaluate symptoms and receive preliminary guidance
+- **Hospital Locator**: Find nearby hospitals and healthcare facilities with directions
+- **Appointment Booking**: Schedule medical appointments online with your preferred doctor
+- **Appointment Management**: View, manage, and track your upcoming appointments
+- **Emergency Services**: Quick access to emergency contacts and services
+- **Doctor Directory**: Browse and select from available healthcare professionals
+- **Pharmacy Finder**: Locate nearby pharmacies with contact information
+- **Multi-language Support**: Available in English and French for broader accessibility
+- **Responsive Design**: Seamless experience across desktop, tablet, and mobile devices
+- **Dark/Light Mode**: User preference-based theme selection
+- **Simple Mode**: Simplified interface for easier navigation
+
+## 🛠 Tech Stack
+
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS with custom theme
+- **UI Components**: Shadcn UI + Radix UI primitives
+- **State Management**: React Context API + TanStack Query
+- **Routing**: React Router DOM
+- **Backend**: Supabase (PostgreSQL, Authentication, Storage)
+- **Forms**: React Hook Form with Zod validation
+- **Icons**: Lucide React
+- **Data Visualization**: Recharts
+- **Date Handling**: date-fns
+- **Theming**: next-themes
+
+## 📋 Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn package manager
+- Supabase account (for backend services)
+
+## 🔧 Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd health-booking-care-10
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up environment variables by creating a `.env` file:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. Start the development server:
+```bash
+npm run dev
+```
+
+The application will be accessible at `http://localhost:8080`
+
+## 🚀 Available Scripts
+
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Create production build
+- `npm run build:dev` - Create development build
+- `npm run lint` - Check code for linting errors
+- `npm run preview` - Preview production build locally
+
+## 🏗️ Project Structure
+
+```
+src/
+├── components/         # Reusable UI components
+│   ├── ui/            # Shadcn UI components
+│   └── ...
+├── contexts/          # React Context providers
+├── hooks/             # Custom React hooks
+├── lib/               # Utility functions
+├── pages/             # Route-level components
+├── services/          # API/service integrations
+└── types/             # TypeScript type definitions
+```
+
+## 💡 Key Features Implementation
+
+### Multi-language Support
+The application supports both English and French with easy language switching through the app context.
+
+### Responsive Design
+Optimized for all device sizes with a mobile-first approach and dedicated bottom navigation for smartphones.
+
+### Accessibility
+Built with accessibility in mind, following WCAG guidelines with proper semantic HTML and ARIA attributes.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 📞 Contact
+
+MediFast Cameroon - [your-email@example.com](mailto:your-email@example.com)
+
+Project Link: [https://github.com/yourusername/health-booking-care](https://github.com/yourusername/health-booking-care)
+
+---
+
+Made with ❤️ for better healthcare in Cameroon
