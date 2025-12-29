@@ -21,18 +21,19 @@ export default function HospitalMap() {
 
   // 1. Get user location automatically
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        setPosition([lat, lon]);
-
-        console.log("User position:", position);
-      },
-      (err) => console.error("Location error:", err)
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      setPosition([lat, lon]);
+      console.log("User position:", [lat, lon]);
+    },
+    (err) => {
+      console.error("Location error:", err);
       alert("Location access denied. Please enable location services.");
-    );
-  }, []);
+    }
+  );
+}, []);
 
   // 2. Fetch hospitals after we have location
   useEffect(() => {
