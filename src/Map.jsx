@@ -199,34 +199,27 @@ export default function HospitalMap() {
   // -------------------------------
   // 3. RENDER
   // -------------------------------
-  if (!position) return <p>Getting your location…</p>;
-
-  return (
-    <div style={{ 
-                  display: "flex",
-                  gap: "20px",
-                  marginTop: "20px"
-                }}>
-
-    <MapContainer
-      center={position}
-      zoom={14}
-      style={{
-        height: "450px",
-        width: "65%",      // map takes 65% of the screen
-        borderRadius: "12px"
-      }}
-    >
-
+      if (!position) return <p>Getting your location…</p>;
+    
+      return (
+    <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
+      {/* LEFT: Map */}
+      <MapContainer
+        center={position}
+        zoom={14}
+        style={{
+          height: "450px",
+          width: "65%",
+          borderRadius: "12px"
+        }}
+      >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
         <Marker position={position} icon={UserIcon}>
           <Popup>You are here</Popup>
         </Marker>
-
+    
         {hospitals.map((h) => {
           const isNearest = nearest && h.id === nearest.id;
-
           return (
             <Marker
               key={h.id}
@@ -236,8 +229,7 @@ export default function HospitalMap() {
               <Popup>
                 <strong>{h.tags?.name || "Hospital"}</strong>
                 <br />
-                Distance:{" "}
-                {h.drivingDistance
+                Distance: {h.drivingDistance
                   ? (h.drivingDistance / 1000).toFixed(2) + " km"
                   : "Unknown"}
                 <br />
@@ -261,7 +253,7 @@ export default function HospitalMap() {
                     color: "white",
                     border: "none",
                     borderRadius: "6px",
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                 >
                   Navigate
@@ -271,25 +263,26 @@ export default function HospitalMap() {
           );
         })}
       </MapContainer>
-
-      <div style={{ ma:div style={{
-                  width: "35%",        // list takes 35% of the screen
-                  maxHeight: "450px",
-                  overflowY: "auto",
-                  padding: "10px",
-                  borderRadius: "12px",
-                  background: "#f8f9fa",
-                  border: "1px solid #ddd"
-                }}>
-                rginTop: "20px" }}>
+    
+      {/* RIGHT: Hospital list */}
+      <div
+        style={{
+          width: "35%",
+          maxHeight: "450px",
+          overflowY: "auto",
+          padding: "10px",
+          borderRadius: "12px",
+          background: "#f8f9fa",
+          border: "1px solid #ddd"
+        }}
+      >
         <h3>Hospitals near you</h3>
-        <ul>
+        <ul style={{ paddingLeft: "20px" }}>
           {hospitals.map((h) => (
             <li key={h.id} style={{ marginBottom: "12px" }}>
               <strong>{h.tags?.name || "Hospital"}</strong>
               <br />
-              Distance:{" "}
-              {h.drivingDistance
+              Distance: {h.drivingDistance
                 ? (h.drivingDistance / 1000).toFixed(2) + " km"
                 : "Unknown"}
               <br />
@@ -313,7 +306,7 @@ export default function HospitalMap() {
                   color: "white",
                   border: "none",
                   borderRadius: "6px",
-                  cursor: "pointer",
+                  cursor: "pointer"
                 }}
               >
                 Navigate
