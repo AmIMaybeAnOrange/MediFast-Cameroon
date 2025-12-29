@@ -202,12 +202,22 @@ export default function HospitalMap() {
   if (!position) return <p>Getting your location…</p>;
 
   return (
-    <div style={{ marginTop: "20px" }}>
-      <MapContainer
-        center={position}
-        zoom={14}
-        style={{ height: "450px", width: "100%", borderRadius: "12px" }}
-      >
+    <div style={{ 
+                  display: "flex",
+                  gap: "20px",
+                  marginTop: "20px"
+                }}>
+
+    <MapContainer
+      center={position}
+      zoom={14}
+      style={{
+        height: "450px",
+        width: "65%",      // map takes 65% of the screen
+        borderRadius: "12px"
+      }}
+    >
+
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         <Marker position={position} icon={UserIcon}>
@@ -262,7 +272,16 @@ export default function HospitalMap() {
         })}
       </MapContainer>
 
-      <div style={{ marginTop: "20px" }}>
+      <div style={{ ma<div style={{
+                  width: "35%",        // list takes 35% of the screen
+                  maxHeight: "450px",
+                  overflowY: "auto",
+                  padding: "10px",
+                  borderRadius: "12px",
+                  background: "#f8f9fa",
+                  border: "1px solid #ddd"
+                }}>
+                rginTop: "20px" }}>
         <h3>Hospitals near you</h3>
         <ul>
           {hospitals.map((h) => (
