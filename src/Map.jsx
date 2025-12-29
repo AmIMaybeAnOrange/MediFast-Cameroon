@@ -136,28 +136,59 @@ export default function HospitalMap() {
     }
 
     fetchWithFallback(query)
-      .then((data) => {
-        const results = (data.elements || [])
-          .map((h) => {
-            const hLat = h.lat || h.center?.lat;
-            const hLon = h.lon || h.center?.lon;
-            if (!hLat || !hLon) return null;
+ .then(async (data) => {
+  const rawHospitals = (data.elements || [])
+    .map((h) => {
+      const hLat = h.lat || h.center?.lat;
+      const hLon = h.lon || h.center?.lon;
+      if (!hLat || !hLon) return null;
 
-            const distKm = getDistanceKm(lat, lon, hLat, hLon);
+      return {
+        ...h,
+        lat: hLat,
+        lon: hLon,
+      };
+    })
+    .filter(Boolean);
 
-            return {
-              ...h,
-              lat: hLat,
-              lon: hLon,
-              distance: distKm,
-            };
-          })
-          .filter(Boolean)
-          .sort((a, b) => a.distance - b.distance);
+  // Fetch driving distance for each hospital
+  async function getDrivingDistance(h) {
+    try {
+      const url = `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${h.lon},${h.lat}?overview=false`;
+      const res = await fetch(url);
+      const json = await res.json();
 
-        setHospitals(results);
-        setNearest(results[0] || null);
-      })
+      if (json.routes && json.routes.length > 0) {
+        return {
+          ...h,
+          drivingDistance: json.routes[0].distance, // meters
+          drivingDuration: json.routes[0].duration, // seconds
+        };
+      }
+    } catch (err) {
+      console.warn("OSRM routing failed:", err);
+    }
+
+    // fallback to straight-line distance
+    return {
+      ...h,
+      drivingDistance: getDistanceKm(lat, lon, h.lat, h.lon) * 1000,
+      drivingDuration: null,
+    };
+  }
+
+  const enriched = [];
+  for (const h of rawHospitals) {
+    enriched.push(await getDrivingDistance(h));
+  }
+
+  // Sort by driving distance
+  enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
+
+  setHospitals(enriched);
+  setNearest(enriched[0] || null);
+})
+
       .catch((err) => {
         console.error("Overpass failed completely:", err);
         alert("Unable to load hospitals right now. Please try again later.");
