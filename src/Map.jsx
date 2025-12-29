@@ -47,93 +47,126 @@ export default function HospitalMap() {
   const [hospitals, setHospitals] = useState([]);
   const [nearest, setNearest] = useState(null);
 
-  // Get user location
- // Fetch hospitals with retries + fallback servers
-useEffect(() => {
-  if (!position) return;
+  // -------------------------------
+  // 1. GET USER LOCATION WITH TIMEOUT + FALLBACK
+  // -------------------------------
+  useEffect(() => {
+    let timeoutId;
 
-  const [lat, lon] = position;
-
-  const query = `
-    [out:json];
-    (
-      node["amenity"="hospital"](around:25000, ${lat}, ${lon});
-      way["amenity"="hospital"](around:25000, ${lat}, ${lon});
-      relation["amenity"="hospital"](around:25000, ${lat}, ${lon});
-    );
-    out center;
-  `;
-
-  // Overpass servers (fallback list)
-  const servers = [
-    "https://overpass-api.de/api/interpreter",
-    "https://overpass.kumi.systems/api/interpreter",
-    "https://overpass.nchc.org.tw/api/interpreter",
-  ];
-
-  // Fetch with retry + fallback
-  async function fetchWithFallback(query, retries = 3) {
-    for (let server of servers) {
-      for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-          console.log(`Fetching from ${server} (attempt ${attempt})`);
-
-          const res = await fetch(server, {
-            method: "POST",
-            body: query,
-          });
-
-          const text = await res.text();
-
-          // Overpass sometimes returns HTML error pages
-          if (text.trim().startsWith("<")) {
-            throw new Error("Received HTML instead of JSON");
-          }
-
-          const data = JSON.parse(text);
-          return data;
-        } catch (err) {
-          console.warn(`Error from ${server} attempt ${attempt}:`, err);
-
-          // Wait before retrying
-          await new Promise((resolve) => setTimeout(resolve, 1200));
-        }
-      }
+    function success(pos) {
+      clearTimeout(timeoutId);
+      setPosition([pos.coords.latitude, pos.coords.longitude]);
     }
 
-    throw new Error("All Overpass servers failed");
-  }
+    function error(err) {
+      clearTimeout(timeoutId);
+      console.warn("Geolocation failed:", err);
 
-  fetchWithFallback(query)
-    .then((data) => {
-      const results = (data.elements || [])
-        .map((h) => {
-          const hLat = h.lat || h.center?.lat;
-          const hLon = h.lon || h.center?.lon;
-          if (!hLat || !hLon) return null;
+      // Fallback location (Toronto)
+      setPosition([43.6532, -79.3832]);
+    }
 
-          const distKm = getDistanceKm(lat, lon, hLat, hLon);
+    navigator.geolocation.getCurrentPosition(success, error);
 
-          return {
-            ...h,
-            lat: hLat,
-            lon: hLon,
-            distance: distKm,
-          };
-        })
-        .filter(Boolean)
-        .sort((a, b) => a.distance - b.distance);
+    // Timeout after 5 seconds
+    timeoutId = setTimeout(() => {
+      console.warn("Geolocation timed out — using fallback");
+      setPosition([43.6532, -79.3832]);
+    }, 5000);
+  }, []);
 
-      setHospitals(results);
-      setNearest(results[0] || null);
-    })
-    .catch((err) => {
-      console.error("Overpass failed completely:", err);
-      alert("Unable to load hospitals right now. Please try again later.");
-    });
-}, [position]);
+  // -------------------------------
+  // 2. FETCH HOSPITALS WITH RETRIES + FALLBACK SERVERS + TIMEOUT
+  // -------------------------------
+  useEffect(() => {
+    if (!position) return;
 
+    const [lat, lon] = position;
 
+    const query = `
+      [out:json];
+      (
+        node["amenity"="hospital"](around:25000, ${lat}, ${lon});
+        way["amenity"="hospital"](around:25000, ${lat}, ${lon});
+        relation["amenity"="hospital"](around:25000, ${lat}, ${lon});
+      );
+      out center;
+    `;
+
+    const servers = [
+      "https://overpass-api.de/api/interpreter",
+      "https://overpass.kumi.systems/api/interpreter",
+      "https://overpass.nchc.org.tw/api/interpreter",
+    ];
+
+    function fetchWithTimeout(url, options, timeout = 8000) {
+      return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Timeout")), timeout)
+        ),
+      ]);
+    }
+
+    async function fetchWithFallback(query, retries = 2) {
+      for (let server of servers) {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+          try {
+            console.log(`Fetching from ${server} (attempt ${attempt})`);
+
+            const res = await fetchWithTimeout(server, {
+              method: "POST",
+              body: query,
+            });
+
+            const text = await res.text();
+
+            if (text.trim().startsWith("<")) {
+              throw new Error("Received HTML instead of JSON");
+            }
+
+            return JSON.parse(text);
+          } catch (err) {
+            console.warn(`Error from ${server} attempt ${attempt}:`, err);
+            await new Promise((resolve) => setTimeout(resolve, 1200));
+          }
+        }
+      }
+      throw new Error("All Overpass servers failed");
+    }
+
+    fetchWithFallback(query)
+      .then((data) => {
+        const results = (data.elements || [])
+          .map((h) => {
+            const hLat = h.lat || h.center?.lat;
+            const hLon = h.lon || h.center?.lon;
+            if (!hLat || !hLon) return null;
+
+            const distKm = getDistanceKm(lat, lon, hLat, hLon);
+
+            return {
+              ...h,
+              lat: hLat,
+              lon: hLon,
+              distance: distKm,
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) => a.distance - b.distance);
+
+        setHospitals(results);
+        setNearest(results[0] || null);
+      })
+      .catch((err) => {
+        console.error("Overpass failed completely:", err);
+        alert("Unable to load hospitals right now. Please try again later.");
+      });
+  }, [position]);
+
+  // -------------------------------
+  // 3. RENDER
+  // -------------------------------
   if (!position) return <p>Getting your location…</p>;
 
   return (
