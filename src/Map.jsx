@@ -4,7 +4,7 @@ import L from "leaflet";
 
 // Fix missing marker icons in Vite/Vercel
 import markerIcon from "leaflet/dist/images/marker-icon.png";
-import redMarker from "leaflet-color-markers/dist/img/marker-icon-red.png";
+import { redIcon } from "leaflet-color-markers";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 const DefaultIcon = L.icon({
