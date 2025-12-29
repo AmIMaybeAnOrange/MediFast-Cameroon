@@ -22,7 +22,17 @@ const HospitalLocator: React.FC = () => {
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
 
+const handleLocateMe = () => {
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setUserLocation([pos.coords.latitude, pos.coords.longitude]);
+    },
+    (err) => console.error("Location error:", err)
+  );
+};
+  
   useEffect(() => {
+    handleLocateMe();
     fetchHospitals();
   }, []);
 
