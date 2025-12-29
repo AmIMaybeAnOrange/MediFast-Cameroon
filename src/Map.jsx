@@ -42,7 +42,7 @@ export default function HospitalMap() {
   if (!position) return <p>Getting your location…</p>;
 
   return (
-    <MapContainer center={position} zoom={14} style={{ height: "300px", width: "100%" }}>
+    <MapContainer center={position} zoom={14} style={{ height: "500px", width: "100%" }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       <Marker position={position}>
