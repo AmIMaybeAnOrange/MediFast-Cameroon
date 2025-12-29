@@ -61,14 +61,14 @@ export default function HospitalMap() {
     function error(err) {
       clearTimeout(timeoutId);
       console.warn("Geolocation failed:", err);
-      setPosition([43.6532, -79.3832]); // Toronto fallback
+      setPosition([3.8480, 11.5021]); // Yaoundé
     }
 
     navigator.geolocation.getCurrentPosition(success, error);
 
     timeoutId = setTimeout(() => {
       console.warn("Geolocation timed out — using fallback");
-      setPosition([43.6532, -79.3832]);
+      setPosition([3.8480, 11.5021]); // Yaoundé
     }, 5000);
   }, []);
 
