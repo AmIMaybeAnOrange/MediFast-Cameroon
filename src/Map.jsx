@@ -13,7 +13,7 @@ const DefaultIcon = L.icon({
   iconAnchor: [12, 41],
 });
 const HospitalIcon = L.icon({
-  iconUrl: "public/markers/marker-icon-red.png",
+  iconUrl: "markers/marker-icon-red.png",
   shadowUrl: markerShadow,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
