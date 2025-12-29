@@ -272,7 +272,7 @@ export default function HospitalMap() {
         })}
       </MapContainer>
 
-      <div style={{ ma<div style={{
+      <div style={{ ma:div style={{
                   width: "35%",        // list takes 35% of the screen
                   maxHeight: "450px",
                   overflowY: "auto",
