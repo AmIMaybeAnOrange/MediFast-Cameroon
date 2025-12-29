@@ -354,6 +354,7 @@ export default function HospitalMap() {
     ))}
   </div>
 </div>
+</div>
 
   );
 }
