@@ -37,11 +37,16 @@ export default function HospitalMap() {
 
     const [lat, lon] = position;
 
-    const query = `
-      [out:json];
-      node["amenity"="hospital"](around:5000, ${lat}, ${lon});
-      out;
-    `;
+const query = `
+  [out:json];
+  (
+    node["amenity"="hospital"](around:5000, ${lat}, ${lon});
+    way["amenity"="hospital"](around:5000, ${lat}, ${lon});
+    relation["amenity"="hospital"](around:5000, ${lat}, ${lon});
+  );
+  out center;
+`;
+
 
     fetch("https://overpass-api.de/api/interpreter", {
       method: "POST",
