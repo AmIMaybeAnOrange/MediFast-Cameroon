@@ -353,10 +353,10 @@ export default function HospitalMap() {
         </div>
       </div>
     ))}
-  </div>   {/* CLOSE list wrapper */}
-</div>     {/* CLOSE RIGHT panel */}
-</div>     {/* CLOSE FLEX container */}
+  </div>   
+</div>  
+</div>   
 
 );
-}        {/* Component end */}
+}      
 
