@@ -48,65 +48,91 @@ export default function HospitalMap() {
   const [nearest, setNearest] = useState(null);
 
   // Get user location
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        setPosition([lat, lon]);
-      },
-      (err) => {
-        console.error("Location error:", err);
-        alert("Location access denied. Please enable location services.");
-      }
+ // Fetch hospitals with retries + fallback servers
+useEffect(() => {
+  if (!position) return;
+
+  const [lat, lon] = position;
+
+  const query = `
+    [out:json];
+    (
+      node["amenity"="hospital"](around:25000, ${lat}, ${lon});
+      way["amenity"="hospital"](around:25000, ${lat}, ${lon});
+      relation["amenity"="hospital"](around:25000, ${lat}, ${lon});
     );
-  }, []);
+    out center;
+  `;
 
-  // Fetch hospitals
-  useEffect(() => {
-    if (!position) return;
+  // Overpass servers (fallback list)
+  const servers = [
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter",
+    "https://overpass.nchc.org.tw/api/interpreter",
+  ];
 
-    const [lat, lon] = position;
+  // Fetch with retry + fallback
+  async function fetchWithFallback(query, retries = 3) {
+    for (let server of servers) {
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          console.log(`Fetching from ${server} (attempt ${attempt})`);
 
-    const query = `
-      [out:json];
-      (
-        node["amenity"="hospital"](around:25000, ${lat}, ${lon});
-        way["amenity"="hospital"](around:25000, ${lat}, ${lon});
-        relation["amenity"="hospital"](around:25000, ${lat}, ${lon});
-      );
-      out center;
-    `;
+          const res = await fetch(server, {
+            method: "POST",
+            body: query,
+          });
 
-    fetch("https://overpass-api.de/api/interpreter", {
-      method: "POST",
-      body: query,
+          const text = await res.text();
+
+          // Overpass sometimes returns HTML error pages
+          if (text.trim().startsWith("<")) {
+            throw new Error("Received HTML instead of JSON");
+          }
+
+          const data = JSON.parse(text);
+          return data;
+        } catch (err) {
+          console.warn(`Error from ${server} attempt ${attempt}:`, err);
+
+          // Wait before retrying
+          await new Promise((resolve) => setTimeout(resolve, 1200));
+        }
+      }
+    }
+
+    throw new Error("All Overpass servers failed");
+  }
+
+  fetchWithFallback(query)
+    .then((data) => {
+      const results = (data.elements || [])
+        .map((h) => {
+          const hLat = h.lat || h.center?.lat;
+          const hLon = h.lon || h.center?.lon;
+          if (!hLat || !hLon) return null;
+
+          const distKm = getDistanceKm(lat, lon, hLat, hLon);
+
+          return {
+            ...h,
+            lat: hLat,
+            lon: hLon,
+            distance: distKm,
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.distance - b.distance);
+
+      setHospitals(results);
+      setNearest(results[0] || null);
     })
-      .then((res) => res.json())
-      .then((data) => {
-        const results = (data.elements || [])
-          .map((h) => {
-            const hLat = h.lat || h.center?.lat;
-            const hLon = h.lon || h.center?.lon;
-            if (!hLat || !hLon) return null;
+    .catch((err) => {
+      console.error("Overpass failed completely:", err);
+      alert("Unable to load hospitals right now. Please try again later.");
+    });
+}, [position]);
 
-            const distKm = getDistanceKm(lat, lon, hLat, hLon);
-
-            return {
-              ...h,
-              lat: hLat,
-              lon: hLon,
-              distance: distKm,
-            };
-          })
-          .filter(Boolean)
-          .sort((a, b) => a.distance - b.distance);
-
-        setHospitals(results);
-        setNearest(results[0] || null);
-      })
-      .catch((err) => console.error("Overpass error:", err));
-  }, [position]);
 
   if (!position) return <p>Getting your location…</p>;
 
