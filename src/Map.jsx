@@ -26,6 +26,8 @@ export default function HospitalMap() {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
         setPosition([lat, lon]);
+
+        console.log("User position:", position);
       },
       (err) => console.error("Location error:", err)
     );
@@ -40,9 +42,9 @@ export default function HospitalMap() {
 const query = `
   [out:json];
   (
-    node["amenity"="hospital"](around:25000000, ${lat}, ${lon});
-    way["amenity"="hospital"](around:25000000, ${lat}, ${lon});
-    relation["amenity"="hospital"](around:25000000, ${lat}, ${lon});
+    node["amenity"="hospital"](around:25000, ${lat}, ${lon});
+    way["amenity"="hospital"](around:25000, ${lat}, ${lon});
+    relation["amenity"="hospital"](around:25000, ${lat}, ${lon});
   );
   out center;
 `;
@@ -54,6 +56,7 @@ const query = `
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log("Overpass data:", data);
         setHospitals(data.elements || []);
       })
       .catch((err) => console.error("Overpass error:", err));
