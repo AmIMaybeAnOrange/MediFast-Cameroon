@@ -66,7 +66,7 @@ const query = `
       <MapContainer
         center={position}
         zoom={14}
-        style={{ height: "500px", width: "100%", borderRadius: "12px" }}
+        style={{ height: "450px", width: "100%", borderRadius: "12px" }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
@@ -76,11 +76,18 @@ const query = `
         </Marker>
 
         {/* Hospital markers */}
-        {hospitals.map((h) => (
-          <Marker key={h.id} position={[h.lat, h.lon]}>
-            <Popup>{h.tags?.name || "Hospital"}</Popup>
-          </Marker>
-        ))}
+        {hospitals.map((h) => {
+          const lat = h.lat || h.center?.lat;
+          const lon = h.lon || h.center?.lon;
+        
+          if (!lat || !lon) return null;
+        
+          return (
+            <Marker key={h.id} position={[lat, lon]}>
+              <Popup>{h.tags?.name || "Hospital"}</Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );
