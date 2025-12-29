@@ -40,9 +40,9 @@ export default function HospitalMap() {
 const query = `
   [out:json];
   (
-    node["amenity"="hospital"](around:5000, ${lat}, ${lon});
-    way["amenity"="hospital"](around:5000, ${lat}, ${lon});
-    relation["amenity"="hospital"](around:5000, ${lat}, ${lon});
+    node["amenity"="hospital"](around:25000, ${lat}, ${lon});
+    way["amenity"="hospital"](around:25000, ${lat}, ${lon});
+    relation["amenity"="hospital"](around:25000, ${lat}, ${lon});
   );
   out center;
 `;
