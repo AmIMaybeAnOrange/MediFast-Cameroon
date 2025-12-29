@@ -21,7 +21,7 @@ const HospitalLocator: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
-  
+
   useEffect(() => {
     fetchHospitals();
   }, []);
@@ -38,8 +38,6 @@ const HospitalLocator: React.FC = () => {
       <h2 className={`text-2xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
         {language === 'fr' ? 'Hôpitaux à Proximité' : 'Nearby Hospitals'}
       </h2>
-
-      <button onClick={handleLocateMe} className="mb-4 px-4 py-2 rounded-full bg-blue-600 text-white" >
 
       <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
         {['all', 'Yaoundé', 'Douala'].map(city => (
