@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../contexts/AppContext';
 import { supabase } from '../lib/supabase';
 import { MapPin, Clock, Phone, ChevronRight, Building2 } from 'lucide-react';
+import HospitalMap from "../Map"; // adjust path if needed
 
 interface Hospital {
   id: string;
@@ -98,6 +99,9 @@ const HospitalLocator: React.FC = () => {
           ))}
         </div>
       )}
+
+      <HospitalMap />
+      
     </div>
   );
 };
