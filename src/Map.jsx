@@ -353,7 +353,8 @@ export default function HospitalMap() {
         </div>
       </div>
     ))}
-  </div>
-</div>
-  );
-}
+</div>   {/* RIGHT: Hospital list */}
+</div>   {/* FLEX container */}
+);
+}        {/* Component end */}
+
