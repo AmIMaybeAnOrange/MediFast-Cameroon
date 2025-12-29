@@ -269,6 +269,7 @@ export default function HospitalMap() {
       </MapContainer>
     
       {/* RIGHT: Hospital list */}
+{/* RIGHT: Hospital list */}
 <div
   style={{
     width: "35%",
@@ -354,7 +355,5 @@ export default function HospitalMap() {
     ))}
   </div>
 </div>
-</div>
-
   );
 }
