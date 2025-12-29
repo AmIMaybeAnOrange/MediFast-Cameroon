@@ -250,20 +250,43 @@ export default function HospitalMap() {
         <h3>Hospitals near you</h3>
         <ul>
           {hospitals.map((h) => {
-            const distText =
-              h.distance < 1
-                ? `${Math.round(h.distance * 1000)} m`
-                : `${h.distance.toFixed(2)} km`;
-
             return (
-              <li key={h.id}>
-                {h.tags?.name || "Hospital"} — {distText}
-                {nearest && h.id === nearest.id && " ⭐"}
+              <li key={h.id} style={{ marginBottom: "12px" }}>
+                <strong>{h.tags?.name || "Hospital"}</strong>
+                <br />
+                {h.tags?.addr_full && <span>{h.tags.addr_full}<br /></span>}
+                Distance: {(h.drivingDistance / 1000).toFixed(2)} km
+                <br />
+                {h.drivingDuration && (
+                  <>Drive time: {(h.drivingDuration / 60).toFixed(0)} min<br /></>
+                )}
+                {nearest && h.id === nearest.id && <strong>⭐ Nearest hospital</strong>}
+                <br />
+                <button
+                  onClick={() =>
+                    window.open(
+                      `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
+                      "_blank"
+                    )
+                  }
+                  style={{
+                    marginTop: "6px",
+                    padding: "6px 10px",
+                    background: "#1a73e8",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Navigate
+                </button>
               </li>
             );
           })}
         </ul>
       </div>
+
     </div>
   );
 }
