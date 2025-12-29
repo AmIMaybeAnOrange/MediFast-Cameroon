@@ -4,10 +4,17 @@ import L from "leaflet";
 
 // Fix missing marker icons in Vite/Vercel
 import markerIcon from "leaflet/dist/images/marker-icon.png";
+import redMarker from "leaflet-color-markers/dist/img/marker-icon-red.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 const DefaultIcon = L.icon({
   iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+const HospitalIcon = L.icon({
+  iconUrl: redMarker,
   shadowUrl: markerShadow,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -88,11 +95,14 @@ const query = `
           if (!lat || !lon) return null;
         
           return (
-            <Marker key={h.id} position={[lat, lon]}>
-              <Popup>{h.tags?.name || "Hospital"}</Popup>
+            <Marker key={h.id} position={[lat, lon]} icon={HospitalIcon}>
+              <Popup>
+                <strong>{h.tags?.name || "Hospital"}</strong>
+              </Popup>
             </Marker>
           );
         })}
+
       </MapContainer>
     </div>
   );
