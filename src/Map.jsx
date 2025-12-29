@@ -61,14 +61,11 @@ export default function HospitalMap() {
     function error(err) {
       clearTimeout(timeoutId);
       console.warn("Geolocation failed:", err);
-
-      // Fallback location (Toronto)
-      setPosition([43.6532, -79.3832]);
+      setPosition([43.6532, -79.3832]); // Toronto fallback
     }
 
     navigator.geolocation.getCurrentPosition(success, error);
 
-    // Timeout after 5 seconds
     timeoutId = setTimeout(() => {
       console.warn("Geolocation timed out — using fallback");
       setPosition([43.6532, -79.3832]);
@@ -76,7 +73,7 @@ export default function HospitalMap() {
   }, []);
 
   // -------------------------------
-  // 2. FETCH HOSPITALS WITH RETRIES + FALLBACK SERVERS + TIMEOUT
+  // 2. FETCH HOSPITALS + ROUTING
   // -------------------------------
   useEffect(() => {
     if (!position) return;
@@ -136,59 +133,63 @@ export default function HospitalMap() {
     }
 
     fetchWithFallback(query)
- .then(async (data) => {
-  const rawHospitals = (data.elements || [])
-    .map((h) => {
-      const hLat = h.lat || h.center?.lat;
-      const hLon = h.lon || h.center?.lon;
-      if (!hLat || !hLon) return null;
+      .then(async (data) => {
+        const rawHospitals = (data.elements || [])
+          .map((h) => {
+            const hLat = h.lat || h.center?.lat;
+            const hLon = h.lon || h.center?.lon;
+            if (!hLat || !hLon) return null;
 
-      return {
-        ...h,
-        lat: hLat,
-        lon: hLon,
-      };
-    })
-    .filter(Boolean);
+            return {
+              ...h,
+              lat: hLat,
+              lon: hLon,
+            };
+          })
+          .filter(Boolean);
 
-  // Fetch driving distance for each hospital
-  async function getDrivingDistance(h) {
-    try {
-      const url = `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${h.lon},${h.lat}?overview=false`;
-      const res = await fetch(url);
-      const json = await res.json();
+        async function getDrivingDistance(h) {
+          if (!h.lat || !h.lon) {
+            return {
+              ...h,
+              drivingDistance: null,
+              drivingDuration: null,
+            };
+          }
 
-      if (json.routes && json.routes.length > 0) {
-        return {
-          ...h,
-          drivingDistance: json.routes[0].distance, // meters
-          drivingDuration: json.routes[0].duration, // seconds
-        };
-      }
-    } catch (err) {
-      console.warn("OSRM routing failed:", err);
-    }
+          try {
+            const url = `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${h.lon},${h.lat}?overview=false`;
+            const res = await fetch(url);
+            const json = await res.json();
 
-    // fallback to straight-line distance
-    return {
-      ...h,
-      drivingDistance: getDistanceKm(lat, lon, h.lat, h.lon) * 1000,
-      drivingDuration: null,
-    };
-  }
+            if (json.routes && json.routes.length > 0) {
+              return {
+                ...h,
+                drivingDistance: json.routes[0].distance,
+                drivingDuration: json.routes[0].duration,
+              };
+            }
+          } catch (err) {
+            console.warn("OSRM routing failed:", err);
+          }
 
-  const enriched = [];
-  for (const h of rawHospitals) {
-    enriched.push(await getDrivingDistance(h));
-  }
+          return {
+            ...h,
+            drivingDistance: getDistanceKm(lat, lon, h.lat, h.lon) * 1000,
+            drivingDuration: null,
+          };
+        }
 
-  // Sort by driving distance
-  enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
+        const enriched = [];
+        for (const h of rawHospitals) {
+          enriched.push(await getDrivingDistance(h));
+        }
 
-  setHospitals(enriched);
-  setNearest(enriched[0] || null);
-})
+        enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
 
+        setHospitals(enriched);
+        setNearest(enriched[0] || null);
+      })
       .catch((err) => {
         console.error("Overpass failed completely:", err);
         alert("Unable to load hospitals right now. Please try again later.");
@@ -209,18 +210,11 @@ export default function HospitalMap() {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* User marker */}
         <Marker position={position} icon={UserIcon}>
           <Popup>You are here</Popup>
         </Marker>
 
-        {/* Hospitals */}
         {hospitals.map((h) => {
-          const distText =
-            h.distance < 1
-              ? `${Math.round(h.distance * 1000)} m`
-              : `${h.distance.toFixed(2)} km`;
-
           const isNearest = nearest && h.id === nearest.id;
 
           return (
@@ -232,35 +226,16 @@ export default function HospitalMap() {
               <Popup>
                 <strong>{h.tags?.name || "Hospital"}</strong>
                 <br />
-                Distance: {distText}
-                {isNearest && (
-                  <>
-                    <br />
-                    <strong>⭐ Nearest hospital</strong>
-                  </>
-                )}
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
-
-      {/* Sorted hospital list */}
-      <div style={{ marginTop: "20px" }}>
-        <h3>Hospitals near you</h3>
-        <ul>
-          {hospitals.map((h) => {
-            return (
-              <li key={h.id} style={{ marginBottom: "12px" }}>
-                <strong>{h.tags?.name || "Hospital"}</strong>
+                Distance:{" "}
+                {h.drivingDistance
+                  ? (h.drivingDistance / 1000).toFixed(2) + " km"
+                  : "Unknown"}
                 <br />
-                {h.tags?.addr_full && <span>{h.tags.addr_full}<br /></span>}
-                Distance: {(h.drivingDistance / 1000).toFixed(2)} km
+                {h.drivingDuration
+                  ? `Drive time: ${(h.drivingDuration / 60).toFixed(0)} min`
+                  : ""}
                 <br />
-                {h.drivingDuration && (
-                  <>Drive time: {(h.drivingDuration / 60).toFixed(0)} min<br /></>
-                )}
-                {nearest && h.id === nearest.id && <strong>⭐ Nearest hospital</strong>}
+                {isNearest && <strong>⭐ Nearest hospital</strong>}
                 <br />
                 <button
                   onClick={() =>
@@ -276,17 +251,58 @@ export default function HospitalMap() {
                     color: "white",
                     border: "none",
                     borderRadius: "6px",
-                    cursor: "pointer"
+                    cursor: "pointer",
                   }}
                 >
                   Navigate
                 </button>
-              </li>
-            );
-          })}
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+
+      <div style={{ marginTop: "20px" }}>
+        <h3>Hospitals near you</h3>
+        <ul>
+          {hospitals.map((h) => (
+            <li key={h.id} style={{ marginBottom: "12px" }}>
+              <strong>{h.tags?.name || "Hospital"}</strong>
+              <br />
+              Distance:{" "}
+              {h.drivingDistance
+                ? (h.drivingDistance / 1000).toFixed(2) + " km"
+                : "Unknown"}
+              <br />
+              {h.drivingDuration
+                ? `Drive time: ${(h.drivingDuration / 60).toFixed(0)} min`
+                : ""}
+              <br />
+              {nearest && h.id === nearest.id && <strong>⭐ Nearest hospital</strong>}
+              <br />
+              <button
+                onClick={() =>
+                  window.open(
+                    `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
+                    "_blank"
+                  )
+                }
+                style={{
+                  marginTop: "6px",
+                  padding: "6px 10px",
+                  background: "#1a73e8",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                Navigate
+              </button>
+            </li>
+          ))}
         </ul>
       </div>
-
     </div>
   );
 }
