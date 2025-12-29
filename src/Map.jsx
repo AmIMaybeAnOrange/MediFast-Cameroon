@@ -1,59 +1,60 @@
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-navigator.geolocation.getCurrentPosition(
-  (position)=> {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-    console.log(lat, lon);
-  },
-  (error) => {
-    console.error("Location error", error);
-  }
+export default function HospitalMap() {
+  const [position, setPosition] = useState(null);
+  const [hospitals, setHospitals] = useState([]);
+
+  // Get user location automatically
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        setPosition([lat, lon]);
+      },
+      (err) => console.error("Location error:", err)
+    );
+  }, []);
+
+  // Fetch hospitals after we have location
+  useEffect(() => {
+    if (!position) return;
+
+    const [lat, lon] = position;
+
+    const query = `
+      [out:json];
+      node["amenity"="hospital"](around:5000, ${lat}, ${lon});
+      out;
+    `;
+
+    fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body: query
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setHospitals(data.elements);
+      });
+  }, [position]);
+
+  if (!position) return <p>Getting your location…</p>;
+
+  return (
+    <MapContainer center={position} zoom={14} style={{ height: "100vh" }}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+      <Marker position={position}>
+        <Popup>You are here</Popup>
+      </Marker>
+
+      {hospitals.map((h) => (
+        <Marker key={h.id} position={[h.lat, h.lon]}>
+          <Popup>{h.tags?.name || "Hospital"}</Popup>
+        </Marker>
+      ))}
+    </MapContainer>
   );
-
-<MapContainer center={[lat, lon]} zoom={14} style={{ height: "100vh" }}>
-  <TileLayer
-    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-  />
-  <Marker position={[lat, lon]} />
-</MapContainer>
-
-const query = `
-[out:json];
-node
-  ["amenity"="hospital"]
-  (around:5000, ${lat}, ${lon});
-out;
-`;
-
-fetch("https://overpass-api.de/api/interpreter", {
-  method: "POST",
-  body: query
-})
-.then(res => res.json())
-.then(data => console.log(data.elements));
-
-<Marker position={[hospital.lat, hospital.lon]} />
-
-<MapContainer center={[lat, lon]} zoom={14} style={{ height: "400px" }}>
-  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-</MapContainer>
-
-<Marker position={[hospital.lat, hospital.lng]}>
-  <Popup>{hospital.name}</Popup>
-</Marker
-
-function getDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a =
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * Math.PI/180) *
-    Math.cos(lat2 * Math.PI/180) *
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
 }
-
-const distance = getDistance(lat, lon, hospital.lat, hospital.lng);
