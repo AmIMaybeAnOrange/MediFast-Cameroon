@@ -1,6 +1,5 @@
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 
 navigator.geolocation.getCurrentPosition(
   (position)=> {
