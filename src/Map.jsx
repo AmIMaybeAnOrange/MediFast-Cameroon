@@ -30,6 +30,7 @@ export default function HospitalMap() {
         console.log("User position:", position);
       },
       (err) => console.error("Location error:", err)
+      alert("Location access denied. Please enable location services.");
     );
   }, []);
 
