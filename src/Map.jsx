@@ -1,11 +1,25 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+
+// Fix missing marker icons in Vite/Vercel
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+const DefaultIcon = L.icon({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function HospitalMap() {
   const [position, setPosition] = useState(null);
   const [hospitals, setHospitals] = useState([]);
 
-  // Get user location automatically
+  // 1. Get user location automatically
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -17,7 +31,7 @@ export default function HospitalMap() {
     );
   }, []);
 
-  // Fetch hospitals after we have location
+  // 2. Fetch hospitals after we have location
   useEffect(() => {
     if (!position) return;
 
@@ -31,29 +45,38 @@ export default function HospitalMap() {
 
     fetch("https://overpass-api.de/api/interpreter", {
       method: "POST",
-      body: query
+      body: query,
     })
       .then((res) => res.json())
       .then((data) => {
-        setHospitals(data.elements);
-      });
+        setHospitals(data.elements || []);
+      })
+      .catch((err) => console.error("Overpass error:", err));
   }, [position]);
 
   if (!position) return <p>Getting your location…</p>;
 
   return (
-    <MapContainer center={position} zoom={14} style={{ height: "500px", width: "100%" }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    <div style={{ marginTop: "20px" }}>
+      <MapContainer
+        center={position}
+        zoom={14}
+        style={{ height: "500px", width: "100%", borderRadius: "12px" }}
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      <Marker position={position}>
-        <Popup>You are here</Popup>
-      </Marker>
-
-      {hospitals.map((h) => (
-        <Marker key={h.id} position={[h.lat, h.lon]}>
-          <Popup>{h.tags?.name || "Hospital"}</Popup>
+        {/* User marker */}
+        <Marker position={position}>
+          <Popup>You are here</Popup>
         </Marker>
-      ))}
-    </MapContainer>
+
+        {/* Hospital markers */}
+        {hospitals.map((h) => (
+          <Marker key={h.id} position={[h.lat, h.lon]}>
+            <Popup>{h.tags?.name || "Hospital"}</Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 }
