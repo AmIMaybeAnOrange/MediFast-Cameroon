@@ -5,9 +5,6 @@ import L from "leaflet";
 // Fix missing marker icons in Vite/Vercel
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-const [selectedHospital, setSelectedHospital] = useState(null);
-const mapRef = useRef(null);
-
 // Custom icons from /public
 const UserIcon = L.icon({
   iconUrl: "/markers/marker-icon-blue.png",
@@ -210,7 +207,6 @@ export default function HospitalMap() {
       <MapContainer
         center={position}
         zoom={14}
-        whenCreated={(map) => (mapRef.current = map)}
         style={{
           height: "450px",
           width: "65%",
@@ -269,94 +265,56 @@ export default function HospitalMap() {
       </MapContainer>
     
       {/* RIGHT: Hospital list */}
-{/* RIGHT: Hospital list */}
-<div
-  style={{
-    width: "35%",
-    maxHeight: "450px",
-    overflowY: "auto",
-    padding: "10px",
-    borderRadius: "12px",
-    background: "#f8f9fa",
-    border: "1px solid #ddd"
-  }}
->
-  <h3 className="text-lg font-semibold mb-4">Hospitals near you</h3>
-
-  <div className="space-y-3">
-    {hospitals.map((h, i) => (
       <div
-        key={i}
-        className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
+        style={{
+          width: "35%",
+          maxHeight: "450px",
+          overflowY: "auto",
+          padding: "10px",
+          borderRadius: "12px",
+          background: "#f8f9fa",
+          border: "1px solid #ddd"
+        }}
       >
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h4 className="font-semibold text-gray-800">
-              {h.tags?.name || "Hospital"}
-            </h4>
-
-            <p className="text-xs text-gray-500">
-              {h.tags?.addr_full || "No address available"}
-            </p>
-
-            <div className="flex items-center gap-3 mt-2 text-sm">
-              <span className="flex items-center gap-1 text-gray-600">
-                <span className="text-red-500">📍</span>
-                {h.drivingDistance
-                  ? (h.drivingDistance / 1000).toFixed(2) + " km"
-                  : "Unknown"}
-              </span>
-
-              {h.drivingDuration && (
-                <span className="flex items-center gap-1 text-gray-600">
-                  <span className="text-green-500">⏱</span>
-                  {(h.drivingDuration / 60).toFixed(0)} min
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* CALL BUTTON */}
-          <button
-            onClick={() =>
-              window.open(
-                `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
-                "_blank"
-              )
-            }
-            className="bg-red-100 text-red-600 p-3 rounded-full hover:bg-red-200 transition-colors"
-          >
-            📞
-          </button>
-        </div>
-
-        {/* ACTION BUTTONS */}
-        <div className="flex gap-3 mt-3">
-          <button
-            onClick={() => showOnMap(h)}
-            className="flex-1 bg-blue-100 text-blue-700 py-2 rounded-lg hover:bg-blue-200 transition-colors"
-          >
-            Show on map
-          </button>
-
-          <button
-            onClick={() =>
-              window.open(
-                `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
-                "_blank"
-              )
-            }
-            className="flex-1 bg-green-100 text-green-700 py-2 rounded-lg hover:bg-green-200 transition-colors"
-          >
-            Navigate
-          </button>
-        </div>
+        <h3>Hospitals near you</h3>
+        <ul style={{ paddingLeft: "20px" }}>
+          {hospitals.map((h) => (
+            <li key={h.id} style={{ marginBottom: "12px" }}>
+              <strong>{h.tags?.name || "Hospital"}</strong>
+              <br />
+              Distance: {h.drivingDistance
+                ? (h.drivingDistance / 1000).toFixed(2) + " km"
+                : "Unknown"}
+              <br />
+              {h.drivingDuration
+                ? `Drive time: ${(h.drivingDuration / 60).toFixed(0)} min`
+                : ""}
+              <br />
+              {nearest && h.id === nearest.id && <strong>⭐ Nearest hospital</strong>}
+              <br />
+              <button
+                onClick={() =>
+                  window.open(
+                    `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
+                    "_blank"
+                  )
+                }
+                style={{
+                  marginTop: "6px",
+                  padding: "6px 10px",
+                  background: "#1a73e8",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer"
+                }}
+              >
+                Navigate
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
-    ))}
-  </div>   
-</div>  
-</div>   
-
-);
-}      
-
+    </div>
+  );
+}
