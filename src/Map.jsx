@@ -177,7 +177,3 @@ export default function HospitalMap() {
     </div>
   );
 }
-
-     
-  );
-}
