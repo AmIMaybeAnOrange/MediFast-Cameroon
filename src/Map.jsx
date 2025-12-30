@@ -55,12 +55,19 @@ function inferDepartment(h) {
   return "General";
 }
 
+//function to help reverse geocode time limit
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 //function to find an address for hospitals using the lat and lon found
 async function reverseGeocode(lat, lon) {
   try {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
     const res = await fetch(url, {
-      headers: { "User-Agent": "HospitalLocatorApp/1.0" }
+      headers: { "User-Agent": "HospitalLocatorApp/1.0 (contact: contact@mboamed.cm)",
+                "Referer": "https://medi-fast-cameroon-fsux2wb5m-tables-projects-0784640d.vercel.app/"
+               }
     });
     const data = await res.json();
 
@@ -244,6 +251,9 @@ useEffect(() => {
 
       for (const h of rawHospitals) {
         const enrichedHospital = await getDrivingDistance(h);
+
+        // ⭐ Respect Nominatim rate limit 
+        await sleep(1100);
 
         // ⭐ Reverse geocode
         const reverseData = await reverseGeocode(
