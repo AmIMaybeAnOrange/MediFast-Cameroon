@@ -206,6 +206,11 @@ useEffect(() => {
     throw new Error("All Overpass servers failed");
   }
 
+  // Small helper to respect Nominatim rate limits
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   fetchWithFallback(query)
     .then(async (data) => {
       const rawHospitals = (data.elements || [])
@@ -246,13 +251,13 @@ useEffect(() => {
         };
       }
 
-      // ⭐ ENRICHMENT LOOP (fixed)
+      // ⭐ ENRICHMENT LOOP (with delay + reverse geocode + name)
       const enriched = [];
 
       for (const h of rawHospitals) {
         const enrichedHospital = await getDrivingDistance(h);
 
-        // ⭐ Respect Nominatim rate limit 
+        // ⭐ Respect Nominatim rate limit (1 request/sec)
         await sleep(1100);
 
         // ⭐ Reverse geocode
@@ -297,7 +302,6 @@ useEffect(() => {
       alert("Unable to load hospitals right now. Please try again later.");
     });
 }, [position]);
-
 
   //filter logic for hospitals
 const filteredHospitals =
