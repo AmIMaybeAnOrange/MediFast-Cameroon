@@ -197,6 +197,7 @@ export default function HospitalMap() {
       );
 
         const [selectedDept, setSelectedDept] = useState("All");
+        const [departments, setDepartments] = useState([]);
 
         //sorts hospitals by driving distance
         enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
