@@ -58,12 +58,12 @@ function inferDepartment(h) {
 //styles for buttons depending on department
 const departmentStyles = {
   All: { icon: "🌍", color: "bg-gray-200 text-gray-800", active: "bg-gray-700 text-white" },
-  Maternity: { icon: "🤱", color: "bg-pink-400 text-pink-800", active: "bg-pink-600 text-white" },
-  Pediatrics: { icon: "🧒", color: "bg-green-400 text-green-800", active: "bg-green-600 text-white" },
-  Emergency: { icon: "🚑", color: "bg-red-400 text-red-800", active: "bg-red-600 text-white" },
-  Dental: { icon: "🦷", color: "bg-yellow-400 text-yellow-800", active: "bg-yellow-600 text-white" },
-  Cardiology: { icon: "❤️", color: "bg-purple-400 text-purple-800", active: "bg-purple-600 text-white" },
-  General: { icon: "🏥", color: "bg-blue-400 text-blue-800", active: "bg-blue-600 text-white" }
+  Maternity: { icon: "🤱", color: "bg-pink-200 text-pink-800", active: "bg-pink-600 text-white" },
+  Pediatrics: { icon: "🧒", color: "bg-green-200 text-green-800", active: "bg-green-600 text-white" },
+  Emergency: { icon: "🚑", color: "bg-red-200 text-red-800", active: "bg-red-600 text-white" },
+  Dental: { icon: "🦷", color: "bg-yellow-200 text-yellow-800", active: "bg-yellow-600 text-white" },
+  Cardiology: { icon: "❤️", color: "bg-purple-200 text-purple-800", active: "bg-purple-600 text-white" },
+  General: { icon: "🏥", color: "bg-blue-200 text-blue-800", active: "bg-blue-600 text-white" }
 };
 
 
