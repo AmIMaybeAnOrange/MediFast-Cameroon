@@ -185,6 +185,20 @@ export default function HospitalMap() {
           enriched.push(await getDrivingDistance(h));
         }
 
+        //finds deoartments available in the hospital and puts them in an array
+        const departments = Array.from(
+        new Set(
+          enriched.map(h =>
+            h.tags?.["healthcare:speciality"] ||
+            h.tags?.department ||
+            "General"
+          )
+        )
+      );
+
+        const [selectedDept, setSelectedDept] = useState("All");
+
+        //sorts hospitals by driving distance
         enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
 
         setHospitals(enriched);
@@ -196,12 +210,42 @@ export default function HospitalMap() {
       });
   }, [position]);
 
+  const filteredHospitals = selectedDept === "All"
+  ? hospitals
+  : hospitals.filter(h => {
+      const dept =
+        h.tags?.["healthcare:speciality"] ||
+        h.tags?.department ||
+        "General";
+      return dept === selectedDept;
+    });
+
   // -------------------------------
   // 3. RENDER
   // -------------------------------
       if (!position) return <p>Getting your location…</p>;
     
       return (
+        //list de departements
+        <div className="flex gap-2 overflow-x-auto mb-4">
+  <button
+    onClick={() => setSelectedDept("All")}
+    className={selectedDept === "All" ? "bg-blue-600 text-white px-4 py-2 rounded-full" : "bg-white text-gray-700 px-4 py-2 rounded-full"}
+  >
+    All
+  </button>
+
+  {departments.map((dept) => (
+    <button
+      key={dept}
+      onClick={() => setSelectedDept(dept)}
+      className={selectedDept === dept ? "bg-blue-600 text-white px-4 py-2 rounded-full" : "bg-white text-gray-700 px-4 py-2 rounded-full"}
+    >
+      {dept}
+    </button>
+  ))}
+</div>
+
     <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
       {/* LEFT: Map */}
       <MapContainer
