@@ -47,6 +47,9 @@ export default function HospitalMap() {
   const [hospitals, setHospitals] = useState([]);
   const [nearest, setNearest] = useState(null);
 
+  const [selectedDept, setSelectedDept] = useState("All");
+  const [departments, setDepartments] = useState([]);
+
   // -------------------------------
   // 1. GET USER LOCATION WITH TIMEOUT + FALLBACK
   // -------------------------------
@@ -195,9 +198,6 @@ export default function HospitalMap() {
           )
         )
       );
-
-        const [selectedDept, setSelectedDept] = useState("All");
-        const [departments, setDepartments] = useState([]);
 
         //sorts hospitals by driving distance
         enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
