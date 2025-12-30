@@ -243,7 +243,7 @@ export default function HospitalMap() {
     >
       {dept}
     </button>
-  ))}
+  ))};
 </div>
 
     <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
