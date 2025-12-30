@@ -55,6 +55,43 @@ function inferDepartment(h) {
   return "General";
 }
 
+//function to find an address for hospitals using the lat and lon found
+async function reverseGeocode(lat, lon) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "HospitalLocatorApp/1.0" }
+    });
+    const data = await res.json();
+
+    return {
+      displayName: data.display_name || null,
+      street: data.address?.road || null,
+      city: data.address?.city || data.address?.town || data.address?.village || null,
+      state: data.address?.state || null,
+      country: data.address?.country || null
+    };
+  } catch (err) {
+    console.warn("Reverse geocoding failed:", err);
+    return null;
+  }
+}
+
+//function that tries to find name of hospital
+function inferName(h, reverseData) {
+  const tags = h.tags || {};
+
+  return (
+    tags.name ||
+    tags["name:en"] ||
+    tags.official_name ||
+    tags.alt_name ||
+    reverseData?.displayName?.split(",")[0] ||
+    "Unnamed Hospital"
+  );
+}
+
+
 //styles for buttons depending on department
 const departmentStyles = {
   All: { icon: "🌍", color: "bg-gray-200 text-gray-800", active: "bg-gray-700 text-white" },
@@ -212,12 +249,24 @@ export default function HospitalMap() {
         const enriched = [];
         for (const h of rawHospitals) {
           const enrichedHospital = await getDrivingDistance(h);
+        
+          // ⭐ Reverse geocode
+          const reverseData = await reverseGeocode(enrichedHospital.lat, enrichedHospital.lon);
+        
+          // ⭐ Add address fields
+          enrichedHospital.address = reverseData?.displayName || "Address unavailable";
+          enrichedHospital.city = reverseData?.city || null;
+          enrichedHospital.street = reverseData?.street || null;
+        
+          // ⭐ Add name detection
+          enrichedHospital.name = inferName(enrichedHospital, reverseData);
+        
+          // ⭐ Department inference
           enrichedHospital.department = inferDepartment(enrichedHospital);
-
-          console.log("Hospital object:", enrichedHospital); // ⭐ log data
-          
+        
           enriched.push(enrichedHospital);
         }
+
         
         // Extract unique departments
         const departmentsList = Array.from(new Set(enriched.map(h => h.department)));
