@@ -270,8 +270,8 @@ return (
         <Marker position={position} icon={UserIcon}>
           <Popup>You are here</Popup>
         </Marker>
-    
-        {hospitals.map((h) => {
+
+        {filteredHospitals.map((h) => {
           const isNearest = nearest && h.id === nearest.id;
           return (
             <Marker
@@ -316,95 +316,92 @@ return (
           );
         })}
       </MapContainer>
-    
+
       {/* RIGHT: Hospital list */}
- {/* RIGHT: Hospital list */}
-<div
-  style={{
-    width: "35%",
-    maxHeight: "450px",
-    overflowY: "auto",
-    padding: "10px",
-    borderRadius: "12px",
-    background: "#f8f9fa",
-    border: "1px solid #ddd"
-  }}
->
-  <h3 className="text-lg font-semibold mb-4">Hospitals near you</h3>
-
-  <div className="space-y-3">
-    {hospitals.map((h, i) => (
       <div
-        key={i}
-        className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
+        style={{
+          width: "35%",
+          maxHeight: "450px",
+          overflowY: "auto",
+          padding: "10px",
+          borderRadius: "12px",
+          background: "#f8f9fa",
+          border: "1px solid #ddd"
+        }}
       >
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h4 className="font-semibold text-gray-800">
-              {h.tags?.name || "Hospital"}
-            </h4>
+        <h3 className="text-lg font-semibold mb-4">Hospitals near you</h3>
 
-            <p className="text-xs text-gray-500">
-              {h.tags?.addr_full || "No address available"}
-            </p>
+        <div className="space-y-3">
+          {filteredHospitals.map((h, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-800">
+                    {h.tags?.name || "Hospital"}
+                  </h4>
 
-            <div className="flex items-center gap-3 mt-2 text-sm">
-              <span className="flex items-center gap-1 text-gray-600">
-                <span className="text-red-500">📍</span>
-                {h.drivingDistance
-                  ? (h.drivingDistance / 1000).toFixed(2) + " km"
-                  : "Unknown"}
-              </span>
+                  <p className="text-xs text-gray-500">
+                    {h.tags?.addr_full || "No address available"}
+                  </p>
 
-              {h.drivingDuration && (
-                <span className="flex items-center gap-1 text-gray-600">
-                  <span className="text-green-500">⏱</span>
-                  {(h.drivingDuration / 60).toFixed(0)} min
-                </span>
-              )}
+                  <div className="flex items-center gap-3 mt-2 text-sm">
+                    <span className="flex items-center gap-1 text-gray-600">
+                      <span className="text-red-500">📍</span>
+                      {h.drivingDistance
+                        ? (h.drivingDistance / 1000).toFixed(2) + " km"
+                        : "Unknown"}
+                    </span>
+
+                    {h.drivingDuration && (
+                      <span className="flex items-center gap-1 text-gray-600">
+                        <span className="text-green-500">⏱</span>
+                        {(h.drivingDuration / 60).toFixed(0)} min
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() =>
+                    window.open(
+                      `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
+                      "_blank"
+                    )
+                  }
+                  className="bg-red-100 text-red-600 p-3 rounded-full hover:bg-red-200 transition-colors"
+                >
+                  📞
+                </button>
+              </div>
+
+              <div className="flex gap-3 mt-3">
+                <button
+                  onClick={() => showOnMap(h)}
+                  className="flex-1 bg-blue-100 text-blue-700 py-2 rounded-lg hover:bg-blue-200 transition-colors"
+                >
+                  Show on map
+                </button>
+
+                <button
+                  onClick={() =>
+                    window.open(
+                      `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
+                      "_blank"
+                    )
+                  }
+                  className="flex-1 bg-green-100 text-green-700 py-2 rounded-lg hover:bg-green-200 transition-colors"
+                >
+                  Navigate
+                </button>
+              </div>
             </div>
-          </div>
-
-          {/* CALL BUTTON */}
-          <button
-            onClick={() =>
-              window.open(
-                `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
-                "_blank"
-              )
-            }
-            className="bg-red-100 text-red-600 p-3 rounded-full hover:bg-red-200 transition-colors"
-          >
-            📞
-          </button>
-        </div>
-
-        {/* ACTION BUTTONS */}
-        <div className="flex gap-3 mt-3">
-          <button
-            onClick={() => showOnMap(h)}
-            className="flex-1 bg-blue-100 text-blue-700 py-2 rounded-lg hover:bg-blue-200 transition-colors"
-          >
-            Show on map
-          </button>
-
-          <button
-            onClick={() =>
-              window.open(
-                `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
-                "_blank"
-              )
-            }
-            className="flex-1 bg-green-100 text-green-700 py-2 rounded-lg hover:bg-green-200 transition-colors"
-          >
-            Navigate
-          </button>
+          ))}
         </div>
       </div>
-    ))}
-  </div>  
-</div>     
-</div>     
-
-  );
+    </div>
+  </div>
+);
 }
