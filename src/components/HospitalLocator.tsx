@@ -17,7 +17,7 @@ interface Hospital {
   image_url: string;
 }
 
-const HospitalLocator: React.FC = () => {
+/*const HospitalLocator: React.FC = () => {
   const { darkMode, language, setCurrentPage } = useApp();
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [selectedCity, setSelectedCity] = useState('all');
@@ -33,13 +33,13 @@ const HospitalLocator: React.FC = () => {
   };
 
   const filtered = selectedCity === 'all' ? hospitals : hospitals.filter(h => h.city === selectedCity);
-
+*/
   return (
     <div className={`min-h-screen pt-20 pb-24 px-4 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <h2 className={`text-2xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
         {language === 'fr' ? 'Hôpitaux à Proximité' : 'Nearby Hospitals'}
       </h2>
-
+      {/*
       <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
         {['all', 'Yaoundé', 'Douala'].map(city => (
           <button key={city} onClick={() => setSelectedCity(city)}
@@ -49,7 +49,7 @@ const HospitalLocator: React.FC = () => {
             {city === 'all' ? (language === 'fr' ? 'Tous' : 'All') : city}
           </button>
         ))}
-      </div>
+      </div> 
 
       {selectedHospital ? (
         <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg overflow-hidden`}>
@@ -98,7 +98,7 @@ const HospitalLocator: React.FC = () => {
             </div>
           ))}
         </div>
-      )}
+      )}*/
 
       <HospitalMap />
       
