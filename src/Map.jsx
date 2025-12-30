@@ -189,7 +189,7 @@ export default function HospitalMap() {
         }
 
         //finds deoartments available in the hospital and puts them in an array
-        const departments = Array.from(
+        const departmentsList = Array.from(
         new Set(
           enriched.map(h =>
             h.tags?.["healthcare:speciality"] ||
@@ -198,6 +198,9 @@ export default function HospitalMap() {
           )
         )
       );
+console.log("Extracted departments:", departmentsList);
+        // Save to state 
+        setDepartments(departmentsList);
 
         //sorts hospitals by driving distance
         enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
