@@ -239,6 +239,7 @@ const filteredHospitals =
   selectedDept === "All"
     ? hospitals
     : hospitals.filter(h => h.department === selectedDept);
+console.log(hospital);
 
   // -------------------------------
   // 3. RENDER
