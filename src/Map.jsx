@@ -363,7 +363,7 @@ return (
               icon={isNearest ? NearestHospitalIcon : HospitalIcon}
             >
               <Popup>
-                <strong>{h.tags?.name || "Hospital"}</strong>
+                <strong>{h.name || "Hospital"}</strong>
                 <br />
                 Distance: {h.drivingDistance
                   ? (h.drivingDistance / 1000).toFixed(2) + " km"
@@ -423,11 +423,11 @@ return (
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <h4 className="font-semibold text-gray-800">
-                    {h.tags?.name || "Hospital"}
+                    {h.name || "Hospital"}
                   </h4>
 
                   <p className="text-xs text-gray-500">
-                    {h.tags?.addr_full || "No address available"}
+                    {h.address || "No address available"}
                   </p>
 
                   <div className="flex items-center gap-3 mt-2 text-sm">
