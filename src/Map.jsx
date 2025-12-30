@@ -213,6 +213,9 @@ export default function HospitalMap() {
         for (const h of rawHospitals) {
           const enrichedHospital = await getDrivingDistance(h);
           enrichedHospital.department = inferDepartment(enrichedHospital);
+
+          console.log("Hospital object:", enrichedHospital); // ⭐ log data
+          
           enriched.push(enrichedHospital);
         }
         
