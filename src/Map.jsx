@@ -42,6 +42,31 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
+//sort departments depending on name and type
+function inferDepartment(h) {
+  const name = h.tags?.name?.toLowerCase() || "";
+
+  if (name.includes("matern") || name.includes("obst")) return "Maternity";
+  if (name.includes("pediatr")) return "Pediatrics";
+  if (name.includes("urgence") || name.includes("emerg")) return "Emergency";
+  if (name.includes("denta")) return "Dental";
+  if (name.includes("cardio")) return "Cardiology";
+
+  return "General";
+}
+
+//styles for buttons depending on department
+const departmentStyles = {
+  All: { icon: "🌍", color: "bg-gray-200 text-gray-800", active: "bg-gray-700 text-white" },
+  Maternity: { icon: "🤱", color: "bg-pink-200 text-pink-800", active: "bg-pink-600 text-white" },
+  Pediatrics: { icon: "🧒", color: "bg-green-200 text-green-800", active: "bg-green-600 text-white" },
+  Emergency: { icon: "🚑", color: "bg-red-200 text-red-800", active: "bg-red-600 text-white" },
+  Dental: { icon: "🦷", color: "bg-yellow-200 text-yellow-800", active: "bg-yellow-600 text-white" },
+  Cardiology: { icon: "❤️", color: "bg-purple-200 text-purple-800", active: "bg-purple-600 text-white" },
+  General: { icon: "🏥", color: "bg-blue-200 text-blue-800", active: "bg-blue-600 text-white" }
+};
+
+
 export default function HospitalMap() {
   const [position, setPosition] = useState(null);
   const [hospitals, setHospitals] = useState([]);
@@ -183,24 +208,19 @@ export default function HospitalMap() {
           };
         }
 
+        //dwpartment extraxtion
         const enriched = [];
         for (const h of rawHospitals) {
-          enriched.push(await getDrivingDistance(h));
+          const enrichedHospital = await getDrivingDistance(h);
+          enrichedHospital.department = inferDepartment(enrichedHospital);
+          enriched.push(enrichedHospital);
         }
-
-        //finds deoartments available in the hospital and puts them in an array
-        const departmentsList = Array.from(
-        new Set(
-          enriched.map(h =>
-            h.tags?.["healthcare:speciality"] ||
-            h.tags?.department ||
-            "General"
-          )
-        )
-      );
-console.log("Extracted departments:", departmentsList);
-        // Save to state 
+        
+        // Extract unique departments
+        const departmentsList = Array.from(new Set(enriched.map(h => h.department)));
+        
         setDepartments(departmentsList);
+
 
         //sorts hospitals by driving distance
         enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
@@ -214,15 +234,11 @@ console.log("Extracted departments:", departmentsList);
       });
   }, [position]);
 
-  const filteredHospitals = selectedDept === "All"
-  ? hospitals
-  : hospitals.filter(h => {
-      const dept =
-        h.tags?.["healthcare:speciality"] ||
-        h.tags?.department ||
-        "General";
-      return dept === selectedDept;
-    });
+  //filter logic for hospitals
+const filteredHospitals =
+  selectedDept === "All"
+    ? hospitals
+    : hospitals.filter(h => h.department === selectedDept);
 
   // -------------------------------
   // 3. RENDER
@@ -232,31 +248,25 @@ if (!position) return <p>Getting your location…</p>;
 return (
   <div>
     {/* Department filter bar */}
-    <div className="flex gap-2 overflow-x-auto mb-4">
-      <button
-        onClick={() => setSelectedDept("All")}
-        className={
-          selectedDept === "All"
-            ? "bg-blue-600 text-white px-4 py-2 rounded-full"
-            : "bg-white text-gray-700 px-4 py-2 rounded-full"
-        }
-      >
-        All
-      </button>
-
-      {departments.map((dept) => (
-        <button
-          key={dept}
-          onClick={() => setSelectedDept(dept)}
-          className={
-            selectedDept === dept
-              ? "bg-blue-600 text-white px-4 py-2 rounded-full"
-              : "bg-white text-gray-700 px-4 py-2 rounded-full"
-          }
-        >
-          {dept}
-        </button>
-      ))}
+    <div className="sticky top-0 z-50 bg-white py-2 shadow-sm overflow-x-auto flex gap-2 mb-4">
+      {["All", ...departments].map((dept) => {
+        const style = departmentStyles[dept] || departmentStyles["General"];
+        const isActive = selectedDept === dept;
+    
+        return (
+          <button
+            key={dept}
+            onClick={() => setSelectedDept(dept)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors
+              ${isActive ? style.active : style.color}
+              active:opacity-70
+            `}
+          >
+            <span>{style.icon}</span>
+            <span>{dept}</span>
+          </button>
+        );
+      })}
     </div>
 
     <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
