@@ -13,12 +13,12 @@ export default {
 //safelist for colors on hospital page
 safelist: [ 
   "bg-gray-200", "text-gray-800", "bg-gray-700", "text-white", 
-  "bg-pink-400", "text-pink-800", "bg-pink-600", 
-  "bg-green-400", "text-green-800", "bg-green-600", 
-  "bg-red-400", "text-red-800", "bg-red-600", 
-  "bg-yellow-400", "text-yellow-800", "bg-yellow-600", 
-  "bg-purple-400", "text-purple-800", "bg-purple-600", 
-  "bg-blue-400", "text-blue-800", "bg-blue-600" 
+  "bg-pink-200", "text-pink-800", "bg-pink-600", 
+  "bg-green-200", "text-green-800", "bg-green-600", 
+  "bg-red-200", "text-red-800", "bg-red-600", 
+  "bg-yellow-200", "text-yellow-800", "bg-yellow-600", 
+  "bg-purple-200", "text-purple-800", "bg-purple-600", 
+  "bg-blue-200", "text-blue-800", "bg-blue-600" 
 ],
   
   prefix: "",
