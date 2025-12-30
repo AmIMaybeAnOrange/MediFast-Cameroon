@@ -10,6 +10,19 @@ export default {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
+//safelist for colors on hospital page
+module.exports = {
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  safelist: [
+    "bg-gray-200", "text-gray-800", "bg-gray-700", "text-white",
+    "bg-pink-400", "text-pink-800", "bg-pink-600",
+    "bg-green-400", "text-green-800", "bg-green-600",
+    "bg-red-400", "text-red-800", "bg-red-600",
+    "bg-yellow-400", "text-yellow-800", "bg-yellow-600",
+    "bg-purple-400", "text-purple-800", "bg-purple-600",
+    "bg-blue-400", "text-blue-800", "bg-blue-600"
+  ],
+  
   prefix: "",
   theme: {
     container: {
