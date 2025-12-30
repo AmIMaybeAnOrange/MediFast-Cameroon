@@ -272,8 +272,6 @@ export default function HospitalMap() {
         const departmentsList = Array.from(new Set(enriched.map(h => h.department)));
         
         setDepartments(departmentsList);
-        console.log(enrichedHospital);
-
         //sorts hospitals by driving distance
         enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
 
