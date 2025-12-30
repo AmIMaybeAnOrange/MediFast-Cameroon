@@ -155,9 +155,9 @@ useEffect(() => {
   const query = `
     [out:json][timeout:25];
     (
-      node["amenity"="hospital"](around:15000, ${lat}, ${lon});
-      way["amenity"="hospital"](around:15000, ${lat}, ${lon});
-      relation["amenity"="hospital"](around:15000, ${lat}, ${lon});
+      node["amenity"="hospital"](around:45000, ${lat}, ${lon});
+      way["amenity"="hospital"](around:45000, ${lat}, ${lon});
+      relation["amenity"="hospital"](around:45000, ${lat}, ${lon});
     );
     out center;
   `;
