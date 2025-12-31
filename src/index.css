@@ -130,3 +130,12 @@
 .markdown-preview ol {
   @apply my-4 ml-6;
 }
+
+/* Fix Leaflet map overlapping modals and UI */
+.leaflet-container,
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 1 !important;
+}
+
