@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
+import { MapPin, Clock, Phone } from "lucide-react";
 
 // Fix missing marker icons in Vite/Vercel
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
