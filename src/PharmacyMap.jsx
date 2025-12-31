@@ -404,7 +404,7 @@ return (
       <div className="space-y-3">
         {pharmacies.map((p) => (
           <div
-            key={i}
+            key={p.id}
             className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
           >
             <div className="flex items-start justify-between">
