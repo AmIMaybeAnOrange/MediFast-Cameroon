@@ -129,7 +129,6 @@ export default function HospitalMap() {
   const [selectedHospital, setSelectedHospital] = useState(null);
   const [selectedDept, setSelectedDept] = useState("All");
   const [departments, setDepartments] = useState([]);
-  const [selectedHospital, setSelectedHospital] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
 
@@ -157,6 +156,15 @@ export default function HospitalMap() {
       setPosition([3.8480, 11.5021]); // Yaoundé
     }, 5000);
   }, []);
+
+  useEffect(() => {
+  if (drawerOpen) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+  }
+}, [drawerOpen]);
+
 
 // -------------------------------
 // 2. FETCH HOSPITALS + ROUTING
@@ -353,70 +361,6 @@ return (
     </div>
 
     <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
-      {/*hospital seletected render*/}
-          {selectedHospital && (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="w-[90%] max-w-lg rounded-2xl shadow-lg overflow-hidden bg-white">
-          
-          <img
-            src={selectedHospital.image_url}
-            alt={selectedHospital.name}
-            className="w-full h-48 object-cover"
-          />
-    
-          <div className="p-4">
-            <button
-              onClick={() => setSelectedHospital(null)}
-              className="text-green-600 mb-2"
-            >
-              ← Back
-            </button>
-    
-            <h3 className="text-xl font-bold text-gray-800">
-              {selectedHospital.name}
-            </h3>
-    
-            <p className="flex items-center gap-2 mt-2 text-gray-600">
-              <MapPin size={16} /> {selectedHospital.address}
-            </p>
-    
-            <p className="flex items-center gap-2 mt-1 text-gray-600">
-              <Clock size={16} /> {selectedHospital.working_hours || "Hours unavailable"}
-            </p>
-    
-            <p className="flex items-center gap-2 mt-1 text-gray-600">
-              <Phone size={16} /> {selectedHospital.phone || "No phone available"}
-            </p>
-    
-            <div className="mt-4">
-              <p className="font-semibold mb-2 text-gray-800">Departments:</p>
-              <div className="flex flex-wrap gap-2">
-                {selectedHospital.departments?.map((d, i) => (
-                  <span
-                    key={i}
-                    className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
-                  >
-                    {d}
-                  </span>
-                ))}
-              </div>
-            </div>
-    
-            <button
-              onClick={() =>
-                window.open(
-                  `https://www.google.com/maps/dir/?api=1&destination=${selectedHospital.lat},${selectedHospital.lon}`,
-                  "_blank"
-                )
-              }
-              className="w-full mt-4 bg-green-600 text-white py-3 rounded-xl font-semibold"
-            >
-              Navigate
-            </button>
-          </div>
-        </div>
-      </div>
-    )}
 
       {/* LEFT: Map */}
       <MapContainer
