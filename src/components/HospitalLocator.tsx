@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../contexts/AppContext';
 import { supabase } from '../lib/supabase';
 import { MapPin, Clock, Phone, ChevronRight } from 'lucide-react';
-import HospitalMap from "../Map";
+import HospitalMap from "../HospitalMap";
 
 interface Hospital {
   id: string;
