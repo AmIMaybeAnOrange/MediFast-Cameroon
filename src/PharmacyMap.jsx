@@ -301,7 +301,7 @@ return (
         <Popup>You are here</Popup>
       </Marker>
 
-      {filteredPharmacies.map((p) => {
+      {pharmacies.map((p) => {
         const isNearest = nearest && p.id === nearest.id;
         return (
           <Marker
