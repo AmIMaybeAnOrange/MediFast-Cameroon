@@ -362,7 +362,7 @@ return (
       <h3 className="text-lg font-semibold mb-4">Pharmacies near you</h3>
 
       <div className="space-y-3">
-        {filteredPharmacies.map((p, i) => (
+        {pharmacies.map((p) => (
           <div
             key={i}
             className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
