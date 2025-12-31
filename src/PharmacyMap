@@ -93,9 +93,9 @@ function inferName(h, reverseData) {
   );
 }
 
-export default function PharmacyMao() {
+export default function PharmacyMap() {
   const [position, setPosition] = useState(null);
-  const [pharmacy, setPharmacy] = useState([]);
+  const [pharmacies, setPharmacies] = useState([]);
   const [nearest, setNearest] = useState(null);
   const [selectedPharmacy, setSelectedPharmacy] = useState(null);
 
@@ -127,154 +127,73 @@ export default function PharmacyMao() {
 // -------------------------------
 // 2. FETCH PHARMACY + ROUTING
 // -------------------------------
-useEffect(() => {
-  if (!position) return;
+const rawPharmacy = (data.elements || [])
+  .map((p) => {
+    const pLat = p.lat || p.center?.lat;
+    const pLon = p.lon || p.center?.lon;
+    if (!pLat || !pLon) return null;
 
-  const [lat, lon] = position;
+    return {
+      ...p,
+      lat: pLat,
+      lon: pLon,
+    };
+  })
+  .filter(Boolean);
 
-  const query = `
-    [out:json][timeout:25];
-    (
-      node["amenity"="pharmacy"](around:25000, ${lat}, ${lon});
-      way["amenity"="pharmacy"](around:25000, ${lat}, ${lon});
-      relation["amenity"="pharmacy"](around:25000, ${lat}, ${lon});
-    );
-    out center;
-  `;
+async function getDrivingDistance(h) {
+  try {
+    const url = `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${h.lon},${h.lat}?overview=false`;
+    const res = await fetch(url);
+    const json = await res.json();
 
-  const servers = [
-    "https://overpass-api.de/api/interpreter",
-    "https://overpass.kumi.systems/api/interpreter",
-    "https://overpass.nchc.org.tw/api/interpreter",
-    "https://overpass.openstreetmap.fr/api/interpreter",
-    "https://overpass.osm.ch/api/interpreter",
-  ];
-
-  function fetchWithTimeout(url, options, timeout = 8000) {
-    return Promise.race([
-      fetch(url, options),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout")), timeout)
-      ),
-    ]);
-  }
-
-  async function fetchWithFallback(query, retries = 2) {
-    for (let server of servers) {
-      for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-          console.log(`Fetching from ${server} (attempt ${attempt})`);
-
-          const res = await fetchWithTimeout(server, {
-            method: "POST",
-            body: query,
-          });
-
-          const text = await res.text();
-
-          if (text.trim().startsWith("<")) {
-            throw new Error("Received HTML instead of JSON");
-          }
-
-          return JSON.parse(text);
-        } catch (err) {
-          console.warn(`Error from ${server} attempt ${attempt}:`, err);
-          await new Promise((resolve) => setTimeout(resolve, 1200));
-        }
-      }
-    }
-    throw new Error("All Overpass servers failed");
-  }
-
-  // Small helper to respect Nominatim rate limits
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  fetchWithFallback(query)
-    .then(async (data) => {
-      const rawPharmacy = (data.elements || [])
-        .map((h) => {
-          const pLat = p.lat || p.center?.lat;
-          const pLon = p.lon || p.center?.lon;
-          if (!pLat || !pLon) return null;
-
-          return {
-            ...p,
-            lat: pLat,
-            lon: pLon,
-          };
-        })
-        .filter(Boolean);
-
-      async function getDrivingDistance(h) {
-        try {
-          const url = `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${h.lon},${h.lat}?overview=false`;
-          const res = await fetch(url);
-          const json = await res.json();
-
-          if (json.routes?.length > 0) {
-            return {
-              ...p,
-              drivingDistance: json.routes[0].distance,
-              drivingDuration: json.routes[0].duration,
-            };
-          }
-        } catch (err) {
-          console.warn("OSRM routing failed:", err);
-        }
-
-        return {
-          ...p,
-          drivingDistance: getDistanceKm(lat, lon, h.lat, h.lon) * 1000,
-          drivingDuration: null,
-        };
-      }
-
-      // ⭐ ENRICHMENT LOOP (with delay + reverse geocode + name)
-      const enriched = [];
-
-      for (const p of rawPharmacy) {
-        const enrichedPharmacy = await getDrivingDistance(h);
-
-        // ⭐ Respect Nominatim rate limit (1 request/sec)
-        await sleep(1100);
-
-        // ⭐ Reverse geocode
-        const reverseData = await reverseGeocode(
-          enrichedPharmacy.lat,
-          enrichedPharmacy.lon
-        );
-
-        // ⭐ Add address fields
-        enrichedPharmacy.address =
-          reverseData?.displayName || "Address unavailable";
-
-        enrichedPharmacy.city = reverseData?.city || null;
-        enrichedPharmacy.street = reverseData?.street || null;
-
-        // ⭐ Add name detection
-        enrichedPharmacy.name = inferName(enrichedPharmacy, reverseData);
-
-        // ⭐ Department inference
-        enrichedPharmacy.department = inferDepartment(enrichedPharmacy);
-
-        console.log("FINAL PHARMACY:", enrichedPharmacy);
-
-        enriched.push(enrichedPharmacy);
+    if (json.routes?.length > 0) {
+      return {
+        ...h,
+        drivingDistance: json.routes[0].distance,
+        drivingDuration: json.routes[0].duration,
       };
+    }
+  } catch (err) {
+    console.warn("OSRM routing failed:", err);
+  }
 
-      // Sort by distance
-      enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
+  return {
+    ...h,
+    drivingDistance: getDistanceKm(lat, lon, h.lat, h.lon) * 1000,
+    drivingDuration: null,
+  };
+}
 
-      setPharmacys(enriched);
-      setNearest(enriched[0] || null);
-    })
-    .catch((err) => {
-      console.error("Overpass failed completely:", err);
-      alert("Unable to load Pharmacys right now. Please try again later.");
-    });
-}, [position]);
+const enriched = [];
+
+for (const p of rawPharmacy) {
+  const enrichedPharmacy = await getDrivingDistance(p);
+
+  await sleep(1100);
+
+  const reverseData = await reverseGeocode(
+    enrichedPharmacy.lat,
+    enrichedPharmacy.lon
+  );
+
+  enrichedPharmacy.address =
+    reverseData?.displayName || "Address unavailable";
+
+  enrichedPharmacy.city = reverseData?.city || null;
+  enrichedPharmacy.street = reverseData?.street || null;
+
+  enrichedPharmacy.name = inferName(enrichedPharmacy, reverseData);
+
+  console.log("FINAL PHARMACY:", enrichedPharmacy);
+
+  enriched.push(enrichedPharmacy);
+}
+
+enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
+
+setPharmacies(enriched);
+setNearest(enriched[0] || null);
 
 // -------------------------------
   // 3. RENDER
@@ -282,19 +201,19 @@ useEffect(() => {
 if (!position) return <p>Getting your location…</p>;
 
 return (
-
-    <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
-      {/*Pharmacy seletected render*/}
-          {selectedPharmacy && (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="w-[90%] max-w-lg rounded-2xl shadow-lg overflow-hidden bg-white">
+  <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
+    
+    {/* SELECTED PHARMACY MODAL */}
+    {selectedPharmacy && (
+      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[9999]">
+        <div className="w-[90%] max-w-lg rounded-2xl shadow-lg overflow-hidden bg-white dark:bg-gray-900">
           
           <img
-            src={selectedPharmacy.image_url}
+            src={selectedPharmacy.image_url || "/placeholder.jpg"}
             alt={selectedPharmacy.name}
             className="w-full h-48 object-cover"
           />
-    
+
           <div className="p-4">
             <button
               onClick={() => setSelectedPharmacy(null)}
@@ -302,23 +221,23 @@ return (
             >
               ← Back
             </button>
-    
-            <h3 className="text-xl font-bold text-gray-800">
+
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white">
               {selectedPharmacy.name}
             </h3>
-    
-            <p className="flex items-center gap-2 mt-2 text-gray-600">
+
+            <p className="flex items-center gap-2 mt-2 text-gray-600 dark:text-gray-300">
               <MapPin size={16} /> {selectedPharmacy.address}
             </p>
-    
-            <p className="flex items-center gap-2 mt-1 text-gray-600">
+
+            <p className="flex items-center gap-2 mt-1 text-gray-600 dark:text-gray-300">
               <Clock size={16} /> {selectedPharmacy.working_hours || "Hours unavailable"}
             </p>
-    
-            <p className="flex items-center gap-2 mt-1 text-gray-600">
+
+            <p className="flex items-center gap-2 mt-1 text-gray-600 dark:text-gray-300">
               <Phone size={16} /> {selectedPharmacy.phone || "No phone available"}
             </p>
-    
+
             <button
               onClick={() =>
                 window.open(
@@ -335,150 +254,151 @@ return (
       </div>
     )}
 
-      {/* LEFT: Map */}
-      <MapContainer
-        center={position}
-        zoom={14}
-        style={{
-          height: "450px",
-          width: "65%",
-          borderRadius: "12px"
-        }}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={position} icon={UserIcon}>
-          <Popup>You are here</Popup>
-        </Marker>
+    {/* LEFT: MAP */}
+    <MapContainer
+      center={position}
+      zoom={14}
+      style={{
+        height: "450px",
+        width: "65%",
+        borderRadius: "12px",
+        zIndex: 1
+      }}
+    >
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {filteredPharmacys.map((h) => {
-          const isNearest = nearest && h.id === nearest.id;
-          return (
-            <Marker
-              key={h.id}
-              position={[h.lat, h.lon]}
-              icon={isNearest ? NearestPharmacyIcon : PharmacyIcon}
-            >
-              <Popup>
-                <strong>{h.name || "Pharmacy"}</strong>
-                <br />
-                Distance: {h.drivingDistance
-                  ? (h.drivingDistance / 1000).toFixed(2) + " km"
-                  : "Unknown"}
-                <br />
-                {h.drivingDuration
-                  ? `Drive time: ${(h.drivingDuration / 60).toFixed(0)} min`
-                  : ""}
-                <br />
-                {isNearest && <strong>⭐ Nearest Pharmacy</strong>}
-                <br />
-                <button
-                  onClick={() =>
-                    window.open(
-                      `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
-                      "_blank"
-                    )
-                  }
-                  style={{
-                    marginTop: "6px",
-                    padding: "6px 10px",
-                    background: "#1a73e8",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer"
-                  }}
-                >
-                  Navigate
-                </button>
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
+      <Marker position={position} icon={UserIcon}>
+        <Popup>You are here</Popup>
+      </Marker>
 
-      {/* RIGHT: Pharmacy list */}
-      <div
-        style={{
-          width: "35%",
-          maxHeight: "450px",
-          overflowY: "auto",
-          padding: "10px",
-          borderRadius: "12px",
-          background: "#f8f9fa",
-          border: "1px solid #ddd"
-        }}
-      >
-        <h3 className="text-lg font-semibold mb-4">Pharmacys near you</h3>
+      {filteredPharmacies.map((p) => {
+        const isNearest = nearest && p.id === nearest.id;
+        return (
+          <Marker
+            key={p.id}
+            position={[p.lat, p.lon]}
+            icon={isNearest ? NearestPharmacyIcon : PharmacyIcon}
+          >
+            <Popup>
+              <strong>{p.name || "Pharmacy"}</strong>
+              <br />
+              Distance: {p.drivingDistance
+                ? (p.drivingDistance / 1000).toFixed(2) + " km"
+                : "Unknown"}
+              <br />
+              {p.drivingDuration
+                ? `Drive time: ${(p.drivingDuration / 60).toFixed(0)} min`
+                : ""}
+              <br />
+              {isNearest && <strong>⭐ Nearest Pharmacy</strong>}
+              <br />
+              <button
+                onClick={() =>
+                  window.open(
+                    `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`,
+                    "_blank"
+                  )
+                }
+                style={{
+                  marginTop: "6px",
+                  padding: "6px 10px",
+                  background: "#1a73e8",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer"
+                }}
+              >
+                Navigate
+              </button>
+            </Popup>
+          </Marker>
+        );
+      })}
+    </MapContainer>
 
-        <div className="space-y-3">
-          {filteredPharmacys.map((h, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h4 className="font-semibold text-gray-800">
-                    {h.name || "Pharmacy"}
-                  </h4>
+    {/* RIGHT: PHARMACY LIST */}
+    <div
+      style={{
+        width: "35%",
+        maxHeight: "450px",
+        overflowY: "auto",
+        padding: "10px",
+        borderRadius: "12px",
+        background: "#f8f9fa",
+        border: "1px solid #ddd"
+      }}
+    >
+      <h3 className="text-lg font-semibold mb-4">Pharmacies near you</h3>
 
-                  <p className="text-xs text-gray-500">
-                    {h.address || "No address available"}
-                  </p>
+      <div className="space-y-3">
+        {filteredPharmacies.map((p, i) => (
+          <div
+            key={i}
+            className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h4 className="font-semibold text-gray-800 dark:text-white">
+                  {p.name || "Pharmacy"}
+                </h4>
 
-                  <div className="flex items-center gap-3 mt-2 text-sm">
-                    <span className="flex items-center gap-1 text-gray-600">
-                      <span className="text-red-500">📍</span>
-                      {h.drivingDistance
-                        ? (h.drivingDistance / 1000).toFixed(2) + " km"
-                        : "Unknown"}
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {p.address || "No address available"}
+                </p>
+
+                <div className="flex items-center gap-3 mt-2 text-sm">
+                  <span className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+                    <span className="text-red-500">📍</span>
+                    {p.drivingDistance
+                      ? (p.drivingDistance / 1000).toFixed(2) + " km"
+                      : "Unknown"}
+                  </span>
+
+                  {p.drivingDuration && (
+                    <span className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+                      <span className="text-green-500">⏱</span>
+                      {(p.drivingDuration / 60).toFixed(0)} min
                     </span>
-
-                    {h.drivingDuration && (
-                      <span className="flex items-center gap-1 text-gray-600">
-                        <span className="text-green-500">⏱</span>
-                        {(h.drivingDuration / 60).toFixed(0)} min
-                      </span>
-                    )}
-                  </div>
+                  )}
                 </div>
-
-                <button
-                  onClick={() =>
-                    window.open(
-                      `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
-                      "_blank"
-                    )
-                  }
-                  className="bg-red-100 text-red-600 p-3 rounded-full hover:bg-red-200 transition-colors"
-                >
-                  📞
-                </button>
               </div>
 
-              <div className="flex gap-3 mt-3">
               <button
-                onClick={() => setSelectedPharmacy(h)}
+                onClick={() =>
+                  window.open(
+                    `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`,
+                    "_blank"
+                  )
+                }
+                className="bg-red-100 text-red-600 p-3 rounded-full hover:bg-red-200 transition-colors"
+              >
+                📞
+              </button>
+            </div>
+
+            <div className="flex gap-3 mt-3">
+              <button
+                onClick={() => setSelectedPharmacy(p)}
                 className="flex-1 bg-blue-100 text-blue-700 py-2 rounded-lg hover:bg-blue-200 transition-colors"
               >
                 More details
               </button>
 
-                <button
-                  onClick={() =>
-                    window.open(
-                      `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
-                      "_blank"
-                    )
-                  }
-                  className="flex-1 bg-green-100 text-green-700 py-2 rounded-lg hover:bg-green-200 transition-colors"
-                >
-                  Navigate
-                </button>
-              </div>
+              <button
+                onClick={() =>
+                  window.open(
+                    `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`,
+                    "_blank"
+                  )
+                }
+                className="flex-1 bg-green-100 text-green-700 py-2 rounded-lg hover:bg-green-200 transition-colors"
+              >
+                Navigate
+              </button>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   </div>
