@@ -332,7 +332,7 @@ return (
         height: "450px",
         width: "65%",
         borderRadius: "12px",
-        zIndex: 1
+        zIndex: 0
       }}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
