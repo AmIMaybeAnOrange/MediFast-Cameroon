@@ -275,7 +275,7 @@ return (
     
     {/* SELECTED PHARMACY MODAL */}
     {selectedPharmacy && (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[9999]">
+      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
         <div className="w-[90%] max-w-lg rounded-2xl shadow-lg overflow-hidden bg-white dark:bg-gray-900">
           
           <img
@@ -325,67 +325,65 @@ return (
     )}
 
     {/* LEFT: MAP */}
-    <MapContainer
-      center={position}
-      zoom={14}
-      style={{
-        height: "450px",
-        width: "65%",
-        borderRadius: "12px",
-        zIndex: 0
-      }}
-    >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+         <MapContainer
+        center={position}
+        zoom={14}
+        style={{
+          height: "450px",
+          width: "65%",
+          borderRadius: "12px"
+        }}
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <Marker position={position} icon={UserIcon}>
+          <Popup>You are here</Popup>
+        </Marker>
 
-      <Marker position={position} icon={UserIcon}>
-        <Popup>You are here</Popup>
-      </Marker>
-
-      {pharmacies.map((p) => {
-        const isNearest = nearest && p.id === nearest.id;
-        return (
-          <Marker
-            key={p.id}
-            position={[p.lat, p.lon]}
-            icon={isNearest ? NearestPharmacyIcon : PharmacyIcon}
-          >
-            <Popup>
-              <strong>{p.name || "Pharmacy"}</strong>
-              <br />
-              Distance: {p.drivingDistance
-                ? (p.drivingDistance / 1000).toFixed(2) + " km"
-                : "Unknown"}
-              <br />
-              {p.drivingDuration
-                ? `Drive time: ${(p.drivingDuration / 60).toFixed(0)} min`
-                : ""}
-              <br />
-              {isNearest && <strong>⭐ Nearest Pharmacy</strong>}
-              <br />
-              <button
-                onClick={() =>
-                  window.open(
-                    `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`,
-                    "_blank"
-                  )
-                }
-                style={{
-                  marginTop: "6px",
-                  padding: "6px 10px",
-                  background: "#1a73e8",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
-              >
-                Navigate
-              </button>
-            </Popup>
-          </Marker>
-        );
-      })}
-    </MapContainer>
+        {filteredHospitals.map((h) => {
+          const isNearest = nearest && h.id === nearest.id;
+          return (
+            <Marker
+              key={h.id}
+              position={[h.lat, h.lon]}
+              icon={isNearest ? NearestHospitalIcon : HospitalIcon}
+            >
+              <Popup>
+                <strong>{h.name || "Hospital"}</strong>
+                <br />
+                Distance: {h.drivingDistance
+                  ? (h.drivingDistance / 1000).toFixed(2) + " km"
+                  : "Unknown"}
+                <br />
+                {h.drivingDuration
+                  ? `Drive time: ${(h.drivingDuration / 60).toFixed(0)} min`
+                  : ""}
+                <br />
+                {isNearest && <strong>⭐ Nearest hospital</strong>}
+                <br />
+                <button
+                  onClick={() =>
+                    window.open(
+                      `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
+                      "_blank"
+                    )
+                  }
+                  style={{
+                    marginTop: "6px",
+                    padding: "6px 10px",
+                    background: "#1a73e8",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Navigate
+                </button>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
 
     {/* RIGHT: PHARMACY LIST */}
     <div
