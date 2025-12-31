@@ -56,7 +56,7 @@ const PharmacyPage: React.FC = () => {
   });
 
   return (
-    <div className={`min-h-screen pt-20 pb-24 px-4 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen pt-20 pb-24 px-4 relative z-0 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <h2 className={`text-2xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
         {language === 'fr' ? 'Pharmacies' : 'Pharmacies'}
       </h2>
