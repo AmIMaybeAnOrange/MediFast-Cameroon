@@ -129,8 +129,6 @@ export default function HospitalMap() {
   const [selectedHospital, setSelectedHospital] = useState(null);
   const [selectedDept, setSelectedDept] = useState("All");
   const [departments, setDepartments] = useState([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
 
   // -------------------------------
   // 1. GET USER LOCATION WITH TIMEOUT + FALLBACK
@@ -156,15 +154,6 @@ export default function HospitalMap() {
       setPosition([3.8480, 11.5021]); // Yaoundé
     }, 5000);
   }, []);
-
-  useEffect(() => {
-  if (drawerOpen) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "auto";
-  }
-}, [drawerOpen]);
-
 
 // -------------------------------
 // 2. FETCH HOSPITALS + ROUTING
@@ -361,6 +350,70 @@ return (
     </div>
 
     <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
+      {/*hospital seletected render*/}
+          {selectedHospital && (
+      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="w-[90%] max-w-lg rounded-2xl shadow-lg overflow-hidden bg-white">
+          
+          <img
+            src={selectedHospital.image_url}
+            alt={selectedHospital.name}
+            className="w-full h-48 object-cover"
+          />
+    
+          <div className="p-4">
+            <button
+              onClick={() => setSelectedHospital(null)}
+              className="text-green-600 mb-2"
+            >
+              ← Back
+            </button>
+    
+            <h3 className="text-xl font-bold text-gray-800">
+              {selectedHospital.name}
+            </h3>
+    
+            <p className="flex items-center gap-2 mt-2 text-gray-600">
+              <MapPin size={16} /> {selectedHospital.address}
+            </p>
+    
+            <p className="flex items-center gap-2 mt-1 text-gray-600">
+              <Clock size={16} /> {selectedHospital.working_hours || "Hours unavailable"}
+            </p>
+    
+            <p className="flex items-center gap-2 mt-1 text-gray-600">
+              <Phone size={16} /> {selectedHospital.phone || "No phone available"}
+            </p>
+    
+            <div className="mt-4">
+              <p className="font-semibold mb-2 text-gray-800">Departments:</p>
+              <div className="flex flex-wrap gap-2">
+                {selectedHospital.departments?.map((d, i) => (
+                  <span
+                    key={i}
+                    className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
+                  >
+                    {d}
+                  </span>
+                ))}
+              </div>
+            </div>
+    
+            <button
+              onClick={() =>
+                window.open(
+                  `https://www.google.com/maps/dir/?api=1&destination=${selectedHospital.lat},${selectedHospital.lon}`,
+                  "_blank"
+                )
+              }
+              className="w-full mt-4 bg-green-600 text-white py-3 rounded-xl font-semibold"
+            >
+              Navigate
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
 
       {/* LEFT: Map */}
       <MapContainer
@@ -484,16 +537,12 @@ return (
               </div>
 
               <div className="flex gap-3 mt-3">
-             <button
-                onClick={() => {
-                  setSelectedHospital(h);
-                  setDrawerOpen(true);
-                }}
+              <button
+                onClick={() => setSelectedHospital(h)}
                 className="flex-1 bg-blue-100 text-blue-700 py-2 rounded-lg hover:bg-blue-200 transition-colors"
               >
                 More details
               </button>
-
 
                 <button
                   onClick={() =>
@@ -512,58 +561,6 @@ return (
         </div>
       </div>
     </div>
-    {/* Slide-up drawer */}
-      <div
-        className={`
-          fixed left-0 right-0 bottom-0 z-[9999]
-          bg-white dark:bg-gray-900 rounded-t-2xl shadow-xl
-          transition-transform duration-300
-          ${drawerOpen ? "translate-y-0" : "translate-y-full"}
-        `}
-        style={{ height: "70vh" }}
-      >
-        {selectedHospital && (
-          <div className="p-4 overflow-y-auto h-full">
-            <button
-              onClick={() => setDrawerOpen(false)}
-              className="text-gray-500 dark:text-gray-300 mb-3"
-            >
-              Close
-            </button>
-      
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              {selectedHospital.name}
-            </h2>
-      
-            <p className="text-gray-600 dark:text-gray-300 mt-2">
-              📍 {selectedHospital.address}
-            </p>
-      
-            <p className="text-gray-600 dark:text-gray-300 mt-1">
-              ⏱ {selectedHospital.drivingDuration
-                ? `${(selectedHospital.drivingDuration / 60).toFixed(0)} min drive`
-                : "Drive time unavailable"}
-            </p>
-      
-            <p className="text-gray-600 dark:text-gray-300 mt-1">
-              🚑 Department: {selectedHospital.department}
-            </p>
-      
-            <button
-              onClick={() =>
-                window.open(
-                  `https://www.google.com/maps/dir/?api=1&destination=${selectedHospital.lat},${selectedHospital.lon}`,
-                  "_blank"
-                )
-              }
-              className="mt-4 w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
-            >
-              Navigate
-            </button>
-          </div>
-        )}
-      </div>
-
   </div>
 );
 }
