@@ -345,10 +345,10 @@ return (
             <Marker
               key={p.id}
               position={[p.lat, p.lon]}
-              icon={isNearest ? NearestPharmacyIcon : HospitalIcon}
+              icon={isNearest ? NearestPharmacyIcon : PharmacyIcon}
             >
               <Popup>
-                <strong>{p.name || "Hospital"}</strong>
+                <strong>{p.name || "Pharmacy"}</strong>
                 <br />
                 Distance: {p.drivingDistance
                   ? (p.drivingDistance / 1000).toFixed(2) + " km"
@@ -358,12 +358,12 @@ return (
                   ? `Drive time: ${(p.drivingDuration / 60).toFixed(0)} min`
                   : ""}
                 <br />
-                {isNearest && <strong>⭐ Nearest hospital</strong>}
+                {isNearest && <strong>⭐ Nearest pharmacy</strong>}
                 <br />
                 <button
                   onClick={() =>
                     window.open(
-                      `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`,
+                      `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`,
                       "_blank"
                     )
                   }
