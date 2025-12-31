@@ -134,8 +134,15 @@
 /* Fix Leaflet map overlapping modals and UI */
 .leaflet-container,
 .leaflet-pane,
+.leaflet-tile-pane,
+.leaflet-overlay-pane,
+.leaflet-shadow-pane,
+.leaflet-marker-pane,
+.leaflet-tooltip-pane,
+.leaflet-popup-pane,
 .leaflet-top,
 .leaflet-bottom {
   z-index: 0 !important;
 }
+
 
