@@ -61,6 +61,11 @@ const PharmacyPage: React.FC = () => {
         {language === 'fr' ? 'Pharmacies' : 'Pharmacies'}
       </h2>
 
+      {/* LIVE MAP + LIST (OSM-based) */} 
+      <div className="mt-6"> 
+        <PharmacyMap /> 
+      </div>
+
       {/* CITY FILTER — disabled in prototype */}
       <FeatureFlag enabled={false}>
         <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
