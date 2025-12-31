@@ -129,6 +129,9 @@ export default function HospitalMap() {
   const [selectedHospital, setSelectedHospital] = useState(null);
   const [selectedDept, setSelectedDept] = useState("All");
   const [departments, setDepartments] = useState([]);
+  const [selectedHospital, setSelectedHospital] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
 
   // -------------------------------
   // 1. GET USER LOCATION WITH TIMEOUT + FALLBACK
@@ -537,12 +540,16 @@ return (
               </div>
 
               <div className="flex gap-3 mt-3">
-              <button
-                onClick={() => setSelectedHospital(h)}
+             <button
+                onClick={() => {
+                  setSelectedHospital(h);
+                  setDrawerOpen(true);
+                }}
                 className="flex-1 bg-blue-100 text-blue-700 py-2 rounded-lg hover:bg-blue-200 transition-colors"
               >
                 More details
               </button>
+
 
                 <button
                   onClick={() =>
@@ -561,6 +568,58 @@ return (
         </div>
       </div>
     </div>
+    {/* Slide-up drawer */}
+      <div
+        className={`
+          fixed left-0 right-0 bottom-0 z-[9999]
+          bg-white dark:bg-gray-900 rounded-t-2xl shadow-xl
+          transition-transform duration-300
+          ${drawerOpen ? "translate-y-0" : "translate-y-full"}
+        `}
+        style={{ height: "70vh" }}
+      >
+        {selectedHospital && (
+          <div className="p-4 overflow-y-auto h-full">
+            <button
+              onClick={() => setDrawerOpen(false)}
+              className="text-gray-500 dark:text-gray-300 mb-3"
+            >
+              Close
+            </button>
+      
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              {selectedHospital.name}
+            </h2>
+      
+            <p className="text-gray-600 dark:text-gray-300 mt-2">
+              📍 {selectedHospital.address}
+            </p>
+      
+            <p className="text-gray-600 dark:text-gray-300 mt-1">
+              ⏱ {selectedHospital.drivingDuration
+                ? `${(selectedHospital.drivingDuration / 60).toFixed(0)} min drive`
+                : "Drive time unavailable"}
+            </p>
+      
+            <p className="text-gray-600 dark:text-gray-300 mt-1">
+              🚑 Department: {selectedHospital.department}
+            </p>
+      
+            <button
+              onClick={() =>
+                window.open(
+                  `https://www.google.com/maps/dir/?api=1&destination=${selectedHospital.lat},${selectedHospital.lon}`,
+                  "_blank"
+                )
+              }
+              className="mt-4 w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
+            >
+              Navigate
+            </button>
+          </div>
+        )}
+      </div>
+
   </div>
 );
 }
