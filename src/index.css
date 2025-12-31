@@ -136,6 +136,6 @@
 .leaflet-pane,
 .leaflet-top,
 .leaflet-bottom {
-  z-index: 1 !important;
+  z-index: 0 !important;
 }
 
