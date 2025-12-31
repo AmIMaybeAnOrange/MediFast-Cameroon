@@ -339,23 +339,23 @@ return (
           <Popup>You are here</Popup>
         </Marker>
 
-        {filteredHospitals.map((h) => {
+        {pharmacies.map((p) => {
           const isNearest = nearest && h.id === nearest.id;
           return (
             <Marker
-              key={h.id}
-              position={[h.lat, h.lon]}
-              icon={isNearest ? NearestHospitalIcon : HospitalIcon}
+              key={p.id}
+              position={[p.lat, p.lon]}
+              icon={isNearest ? NearestPharmacyIcon : HospitalIcon}
             >
               <Popup>
-                <strong>{h.name || "Hospital"}</strong>
+                <strong>{p.name || "Hospital"}</strong>
                 <br />
-                Distance: {h.drivingDistance
-                  ? (h.drivingDistance / 1000).toFixed(2) + " km"
+                Distance: {p.drivingDistance
+                  ? (p.drivingDistance / 1000).toFixed(2) + " km"
                   : "Unknown"}
                 <br />
-                {h.drivingDuration
-                  ? `Drive time: ${(h.drivingDuration / 60).toFixed(0)} min`
+                {p.drivingDuration
+                  ? `Drive time: ${(p.drivingDuration / 60).toFixed(0)} min`
                   : ""}
                 <br />
                 {isNearest && <strong>⭐ Nearest hospital</strong>}
