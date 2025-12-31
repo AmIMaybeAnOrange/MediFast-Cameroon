@@ -63,26 +63,34 @@ function sleep(ms) {
 //function to find an address for hospitals using the lat and lon found
 async function reverseGeocode(lat, lon) {
   try {
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=18&extratags=1&namedetails=1`;
+
     const res = await fetch(url, {
-      headers: { "User-Agent": "HospitalLocatorApp/1.0 (contact: contact@mboamed.cm)",
-                "Referer": "https://medi-fast-cameroon-fsux2wb5m-tables-projects-0784640d.vercel.app/"
-               }
+      headers: {
+        "User-Agent": "HospitalLocatorApp/1.0 (contact: your-email@example.com)",
+        "Referer": "https://medi-fast-cameroon-n5m9h67u8-tables-projects-0784640d.vercel.app/"
+      }
     });
+
     const data = await res.json();
 
     return {
       displayName: data.display_name || null,
       street: data.address?.road || null,
       city: data.address?.city || data.address?.town || data.address?.village || null,
-      state: data.address?.state || null,
-      country: data.address?.country || null
+      name:
+        data.namedetails?.name ||
+        data.namedetails?.["name:en"] ||
+        data.extratags?.official_name ||
+        data.extratags?.operator ||
+        null
     };
   } catch (err) {
     console.warn("Reverse geocoding failed:", err);
     return null;
   }
 }
+
 
 //function that tries to find name of hospital
 function inferName(h, reverseData) {
@@ -93,10 +101,12 @@ function inferName(h, reverseData) {
     tags["name:en"] ||
     tags.official_name ||
     tags.alt_name ||
-    reverseData?.displayName?.split(",")[0] ||
+    reverseData?.name ||                     
+    reverseData?.displayName?.split(",")[0] || 
     "Unnamed Hospital"
   );
 }
+
 
 
 //styles for buttons depending on department
