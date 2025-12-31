@@ -144,15 +144,50 @@ useEffect(() => {
       out center;
     `;
 
-    // Fetch from Overpass
-    const res = await fetch("https://overpass-api.de/api/interpreter", {
-      method: "POST",
-      body: query,
-    });
+    // -------------------------------
+    // MULTI‑SERVER FALLBACK
+    // -------------------------------
+    const servers = [
+      "https://overpass-api.de/api/interpreter",
+      "https://overpass.kumi.systems/api/interpreter",
+      "https://overpass.nchc.org.tw/api/interpreter",
+      "https://overpass.openstreetmap.fr/api/interpreter",
+      "https://overpass.osm.ch/api/interpreter",
+    ];
 
-    const data = await res.json();
+    async function fetchOverpass(query) {
+      for (const server of servers) {
+        try {
+          console.log("Trying Overpass server:", server);
 
-    // Normalize coordinates
+          const res = await fetch(server, {
+            method: "POST",
+            body: query,
+          });
+
+          const text = await res.text();
+
+          // Overpass sometimes returns HTML error pages
+          if (text.trim().startsWith("<")) {
+            console.warn("Overpass returned HTML — trying next server");
+            continue;
+          }
+
+          return JSON.parse(text);
+        } catch (err) {
+          console.warn("Overpass server failed:", server, err);
+        }
+      }
+
+      throw new Error("All Overpass servers failed");
+    }
+
+    // Fetch using fallback logic
+    const data = await fetchOverpass(query);
+
+    // -------------------------------
+    // NORMALIZE COORDINATES
+    // -------------------------------
     const rawPharmacy = (data.elements || [])
       .map((p) => {
         const pLat = p.lat || p.center?.lat;
@@ -167,7 +202,9 @@ useEffect(() => {
       })
       .filter(Boolean);
 
-    // Driving distance helper
+    // -------------------------------
+    // DRIVING DISTANCE HELPER
+    // -------------------------------
     async function getDrivingDistance(h) {
       try {
         const url = `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${h.lon},${h.lat}?overview=false`;
@@ -192,7 +229,9 @@ useEffect(() => {
       };
     }
 
-    // Enrichment loop
+    // -------------------------------
+    // ENRICHMENT LOOP
+    // -------------------------------
     const enriched = [];
 
     for (const p of rawPharmacy) {
@@ -224,6 +263,7 @@ useEffect(() => {
 
   loadPharmacies();
 }, [position]);
+
 
 // -------------------------------
   // 3. RENDER
