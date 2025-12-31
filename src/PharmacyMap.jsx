@@ -127,73 +127,103 @@ export default function PharmacyMap() {
 // -------------------------------
 // 2. FETCH PHARMACY + ROUTING
 // -------------------------------
-const rawPharmacy = (data.elements || [])
-  .map((p) => {
-    const pLat = p.lat || p.center?.lat;
-    const pLon = p.lon || p.center?.lon;
-    if (!pLat || !pLon) return null;
+useEffect(() => {
+  if (!position) return;
 
-    return {
-      ...p,
-      lat: pLat,
-      lon: pLon,
-    };
-  })
-  .filter(Boolean);
+  async function loadPharmacies() {
+    const [lat, lon] = position;
 
-async function getDrivingDistance(h) {
-  try {
-    const url = `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${h.lon},${h.lat}?overview=false`;
-    const res = await fetch(url);
-    const json = await res.json();
+    // Build Overpass query
+    const query = `
+      [out:json][timeout:25];
+      (
+        node["amenity"="pharmacy"](around:25000, ${lat}, ${lon});
+        way["amenity"="pharmacy"](around:25000, ${lat}, ${lon});
+        relation["amenity"="pharmacy"](around:25000, ${lat}, ${lon});
+      );
+      out center;
+    `;
 
-    if (json.routes?.length > 0) {
+    // Fetch from Overpass
+    const res = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body: query,
+    });
+
+    const data = await res.json();
+
+    // Normalize coordinates
+    const rawPharmacy = (data.elements || [])
+      .map((p) => {
+        const pLat = p.lat || p.center?.lat;
+        const pLon = p.lon || p.center?.lon;
+        if (!pLat || !pLon) return null;
+
+        return {
+          ...p,
+          lat: pLat,
+          lon: pLon,
+        };
+      })
+      .filter(Boolean);
+
+    // Driving distance helper
+    async function getDrivingDistance(h) {
+      try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${h.lon},${h.lat}?overview=false`;
+        const res = await fetch(url);
+        const json = await res.json();
+
+        if (json.routes?.length > 0) {
+          return {
+            ...h,
+            drivingDistance: json.routes[0].distance,
+            drivingDuration: json.routes[0].duration,
+          };
+        }
+      } catch (err) {
+        console.warn("OSRM routing failed:", err);
+      }
+
       return {
         ...h,
-        drivingDistance: json.routes[0].distance,
-        drivingDuration: json.routes[0].duration,
+        drivingDistance: getDistanceKm(lat, lon, h.lat, h.lon) * 1000,
+        drivingDuration: null,
       };
     }
-  } catch (err) {
-    console.warn("OSRM routing failed:", err);
+
+    // Enrichment loop
+    const enriched = [];
+
+    for (const p of rawPharmacy) {
+      const enrichedPharmacy = await getDrivingDistance(p);
+
+      await sleep(1100);
+
+      const reverseData = await reverseGeocode(
+        enrichedPharmacy.lat,
+        enrichedPharmacy.lon
+      );
+
+      enrichedPharmacy.address =
+        reverseData?.displayName || "Address unavailable";
+
+      enrichedPharmacy.city = reverseData?.city || null;
+      enrichedPharmacy.street = reverseData?.street || null;
+
+      enrichedPharmacy.name = inferName(enrichedPharmacy, reverseData);
+
+      enriched.push(enrichedPharmacy);
+    }
+
+    enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
+
+    setPharmacies(enriched);
+    setNearest(enriched[0] || null);
   }
 
-  return {
-    ...h,
-    drivingDistance: getDistanceKm(lat, lon, h.lat, h.lon) * 1000,
-    drivingDuration: null,
-  };
-}
-
-const enriched = [];
-
-for (const p of rawPharmacy) {
-  const enrichedPharmacy = await getDrivingDistance(p);
-
-  await sleep(1100);
-
-  const reverseData = await reverseGeocode(
-    enrichedPharmacy.lat,
-    enrichedPharmacy.lon
-  );
-
-  enrichedPharmacy.address =
-    reverseData?.displayName || "Address unavailable";
-
-  enrichedPharmacy.city = reverseData?.city || null;
-  enrichedPharmacy.street = reverseData?.street || null;
-
-  enrichedPharmacy.name = inferName(enrichedPharmacy, reverseData);
-
-  console.log("FINAL PHARMACY:", enrichedPharmacy);
-
-  enriched.push(enrichedPharmacy);
-}
-
-enriched.sort((a, b) => a.drivingDistance - b.drivingDistance);
-
-setPharmacies(enriched);
-setNearest(enriched[0] || null);
+  loadPharmacies();
+}, [position]);
 
 // -------------------------------
   // 3. RENDER
