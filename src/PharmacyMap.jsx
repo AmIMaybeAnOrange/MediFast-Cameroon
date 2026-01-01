@@ -340,7 +340,7 @@ return (
         </Marker>
 
         {pharmacies.map((p) => {
-          const isNearest = nearest && h.id === nearest.id;
+          const isNearest = nearest && p.id === nearest.id;
           return (
             <Marker
               key={p.id}
