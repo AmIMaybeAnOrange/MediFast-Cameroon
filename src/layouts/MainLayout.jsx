@@ -7,7 +7,7 @@ import Navigation from '../components/Navigation';
 import BottomNav from '../components/BottomNav';
 import SimpleDashboard from '../components/SimpleDashboard';
 
-const AppShellLayout = () => {
+const MainLayout = () => {
   const { darkMode, simpleMode } = useApp();
   const [menuOpen, setMenuOpen] = useState(false);
 
