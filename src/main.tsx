@@ -2,6 +2,7 @@ import "leaflet/dist/leaflet.css";
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { AuthProvider } from "./contexts/AuthContext";
 
 if("serviceWorker" in navigator){
   window.addEventListener("load",() => 
@@ -10,5 +11,9 @@ if("serviceWorker" in navigator){
     });
   
 // Remove dark mode class addition
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+);
 }
