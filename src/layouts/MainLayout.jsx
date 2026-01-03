@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useApp } from "../contexts/AppContext";
 
-import Header from "./Header";
-import Navigation from "./Navigation";
-import BottomNav from "./BottomNav";
-import SimpleDashboard from "./SimpleDashboard";
+import Header from '../components/Header';
+import Navigation from '../components/Navigation';
+import BottomNav from '../components/BottomNav';
+import SimpleDashboard from '../components/SimpleDashboard';
 
 const AppShellLayout = () => {
   const { darkMode, simpleMode } = useApp();
