@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useApp } from "../contexts/AppContext";
+import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogIn } from "lucide-react";
 
 const LoginPage = () => {
   const { darkMode, t, setCurrentPage, language } = useApp();
-
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -82,7 +83,7 @@ const LoginPage = () => {
             ? "Pas de compte?"
             : "Don't have an account?"}{" "}
           <button
-            onClick={() => setCurrentPage("register")}
+            onClick={() => navigate("/register")}
             className="text-green-600 font-semibold"
           >
             {t("register")}
