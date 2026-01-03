@@ -103,7 +103,7 @@ const WelcomePage: React.FC = () => {
 
           {/* Login/Register Button */}
           <button 
-            onClick={() => setCurrentPage("login")}
+            onClick={() => setCurrentPage("LoginPage")}
             className="w-full bg-green-600 text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition"
           >
             {t('login')} / {t('register')} <ArrowRight size={18} />
