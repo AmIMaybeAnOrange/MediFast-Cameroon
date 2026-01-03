@@ -11,7 +11,7 @@ const Navigation: React.FC<NavigationProps> = ({ isOpen, onClose }) => {
   const { darkMode, t, currentPage, setCurrentPage, isLoggedIn, setUser, language } = useApp();
 
   const menuItems = [
-    { id: 'welcome', icon: Home, label: language === 'fr' ? 'Accueil' : 'Home' },
+    { id: '/', icon: Home, label: language === 'fr' ? 'Accueil' : 'Home' },
     { id: 'symptoms', icon: Stethoscope, label: t('symptoms') },
     { id: 'hospitals', icon: MapPin, label: t('hospitals') },
     { id: 'doctors', icon: UserCheck, label: language === 'fr' ? 'Nos Médecins' : 'Our Doctors' },
@@ -38,7 +38,7 @@ const Navigation: React.FC<NavigationProps> = ({ isOpen, onClose }) => {
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => handleNav(item.id)}
+              onClick={() => navigate(item.id)}
               className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all ${
                 currentPage === item.id
                   ? 'bg-green-600 text-white'
@@ -53,7 +53,7 @@ const Navigation: React.FC<NavigationProps> = ({ isOpen, onClose }) => {
           ))}
           {isLoggedIn && (
             <button
-              onClick={() => { setUser(null); handleNav('welcome'); }}
+              onClick={() => { setUser(null); navigate('welcome'); }}
               className="w-full flex items-center gap-3 p-3 rounded-lg text-red-500 hover:bg-red-50"
             >
               <LogOut size={20} />
