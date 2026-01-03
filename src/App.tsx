@@ -49,6 +49,7 @@ const App = () => (
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/pharmacy" element={<PharmacyPage />} />
+                  <Route path="/hospitals" element={<HospitalsPage />} />
                 </Route>
             
                 {/* Catch-all */}
