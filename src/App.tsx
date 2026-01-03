@@ -22,6 +22,7 @@ import ProfilePage from "./components/ProfilePage";
 import AboutPage from "./components/AboutPage";
 import PharmacyPage from "./components/PharmacyPage";
 import SymptomChecker from "./components/SymptomChecker";
+import LoginPage from "./pages/LoginPage";
 
 const queryClient = new QueryClient();
 
