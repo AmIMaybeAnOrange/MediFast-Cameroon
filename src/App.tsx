@@ -31,28 +31,31 @@ const App = () => (
         <AppProvider>  
           <Toaster />
           <Sonner />
-         <BrowserRouter>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/welcome" element={<WelcomePage />} />
-          
-              {/* Layout-wrapped routes */}
-              <Route path="/doctors" element={<MainLayout><DoctorsPage /></MainLayout>} />
-              <Route path="/book" element={<MainLayout><BookPage /></MainLayout>} />
-              <Route path="/appointments" element={<MainLayout><AppointmentsList /></MainLayout>} />
-              <Route path="/emergency" element={<MainLayout><EmergencyPage /></MainLayout>} />
-              <Route path="/payment" element={<MainLayout><PaymentPage /></MainLayout>} />
-              <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
-              <Route path="/about" element={<MainLayout><AboutPage /></MainLayout>} />
-              <Route path="/pharmacy" element={<MainLayout><PharmacyPage /></MainLayout>} />
-          
-              {/* Catch-all */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+            <BrowserRouter>
+              <Routes>
+            
+                {/* Public pages */}
+                <Route path="/" element={<WelcomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+            
+                {/* Layout-wrapped pages */}
+                <Route element={<MainLayout />}>
+                  <Route path="/doctors" element={<DoctorsPage />} />
+                  <Route path="/book" element={<BookPage />} />
+                  <Route path="/appointments" element={<AppointmentsList />} />
+                  <Route path="/emergency" element={<EmergencyPage />} />
+                  <Route path="/payment" element={<PaymentPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/pharmacy" element={<PharmacyPage />} />
+                </Route>
+            
+                {/* Catch-all */}
+                <Route path="*" element={<NotFound />} />
+            
+              </Routes>
+            </BrowserRouter>
           <Analytics />
         </AppProvider>   
       </TooltipProvider>
