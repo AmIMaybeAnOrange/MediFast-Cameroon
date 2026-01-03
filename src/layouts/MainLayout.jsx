@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useApp } from "../contexts/AppContext";
 import { useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { 
   Menu, Home, UserCheck, Calendar, AlertTriangle, CreditCard 
 } from "lucide-react";
@@ -101,7 +102,7 @@ const MainLayout = ({ children }) => {
 
       {/* PAGE CONTENT */}
       <div className="pt-20 pb-20">
-        {children}
+        <Outlet />
       </div>
 
       {/* BOTTOM NAVIGATION BAR */}
