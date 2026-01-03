@@ -18,6 +18,9 @@ import HospitalsPage from "./components/HospitalLocator";
 import PaymentPage from "./components/PaymentPage";
 import AppointmentsList from "./components/AppointmentsList";
 import EmergencyPage from "./components/EmergencyPage";
+import ProfilePage from "./components/ProfilePage";
+import AboutPage from "./components/AboutPage";
+import PharmacyPage from "./components/PharmacyPage";
 
 const queryClient = new QueryClient();
 
