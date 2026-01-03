@@ -77,7 +77,7 @@ const WelcomePage: React.FC = () => {
             {quickActions.map((action, i) => (
               <button
                 key={i}
-                onClick={() => setCurrentPage(action.page)}
+                onClick={() => navigate(`/${action.page}`)}
                 className="flex flex-col items-center gap-1"
               >
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${action.color}`}>
@@ -151,7 +151,7 @@ const WelcomePage: React.FC = () => {
 
         {/* Featured Doctors Banner */}
         <button 
-          onClick={() => setCurrentPage('doctors')}
+          onClick={() => navigate('/doctors')}
           className={`w-full mt-4 ${darkMode ? 'bg-gradient-to-r from-green-800 to-green-900' : 'bg-gradient-to-r from-green-600 to-green-700'} rounded-2xl p-4 text-white shadow-xl`}
         >
           <div className="flex items-center justify-between">
