@@ -1,4 +1,4 @@
-
+import MainLayout from "./layouts/MainLayout";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,14 +29,14 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<WelcomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="*" element={<NotFound />} />
-              <Route path="/doctors" element={<DoctorsPage />} />
-              <Route path="/book" element={<BookPage />} />
-              <Route path="/hospitals" element={<HospitalsPage />} />
-              <Route path="/payment" element={<PaymentPage />} />
+                <Route path="/doctors" element={<MainLayout><DoctorsPage /></MainLayout>} />
+                <Route path="/book" element={<MainLayout><BookPage /></MainLayout>} />
+                <Route path="/appointments" element={<MainLayout><AppointmentsList /></MainLayout>} />
+                <Route path="/emergency" element={<MainLayout><EmergencyPage /></MainLayout>} />
+                <Route path="/payment" element={<MainLayout><PaymentPage /></MainLayout>} />
+                <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
+                <Route path="/about" element={<MainLayout><AboutPage /></MainLayout>} />
+                <Route path="/pharmacy" element={<MainLayout><PharmacyPage /></MainLayout>} />
             </Routes>
           </BrowserRouter>
           <Analytics />
