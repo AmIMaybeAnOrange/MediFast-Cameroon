@@ -17,7 +17,7 @@ import BookPage from "./components/BookAppointment";
 import HospitalsPage from "./components/HospitalLocator";
 import PaymentPage from "./components/PaymentPage";
 import AppointmentsList from "./components/AppointmentsList";
-
+import EmergencyPage from "./components/EmergencyPage";
 
 const queryClient = new QueryClient();
 
