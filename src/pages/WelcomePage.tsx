@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, Shield, Clock, MapPin, Heart, Stethoscope, UserCheck, Calendar, CreditCard } from 'lucide-react';
 
 const WelcomePage: React.FC = () => {
-  const { darkMode, t, language } = useApp();
+  const { darkMode, t, language, setLanguage, setDarkMode } = useApp();
   const navigate = useNavigate();
 
   const features = [
@@ -34,8 +34,31 @@ const WelcomePage: React.FC = () => {
   ];
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-b from-green-50 to-white'}`}>
-      
+    <div className={`min-h-screen relative ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-b from-green-50 to-white'}`}>
+
+      {/* Top Right Controls (OLD UI restored) */}
+      <div className="absolute top-4 right-4 flex items-center gap-3 z-50">
+        {/* Language Switch */}
+        <button
+          onClick={() => setLanguage(language === "fr" ? "en" : "fr")}
+          className={`px-3 py-1 rounded-full text-sm font-medium shadow ${
+            darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+          }`}
+        >
+          {language === "fr" ? "EN" : "FR"}
+        </button>
+
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className={`p-2 rounded-full shadow ${
+            darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+          }`}
+        >
+          {darkMode ? "🌞" : "🌙"}
+        </button>
+      </div>
+
       {/* Hero Section */}
       <div className="relative h-[50vh] overflow-hidden">
         <img 
