@@ -21,6 +21,7 @@ import EmergencyPage from "./components/EmergencyPage";
 import ProfilePage from "./components/ProfilePage";
 import AboutPage from "./components/AboutPage";
 import PharmacyPage from "./components/PharmacyPage";
+import SymptomChecker from "./components/SymptomChecker";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/pharmacy" element={<PharmacyPage />} />
                   <Route path="/hospitals" element={<HospitalsPage />} />
+                  <Route path="/symptoms" element={<SymptomChecker />} />
                 </Route>
             
                 {/* Catch-all */}
