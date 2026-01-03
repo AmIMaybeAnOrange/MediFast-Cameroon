@@ -1,8 +1,6 @@
 import React from 'react';
-import AppLayout from '@/components/AppLayout';
+import { Navigate } from "react-router-dom";
 
-const Index: React.FC = () => {
-  return <AppLayout />;
-};
+const Index = () => <Navigate to="/welcome" />;
 
 export default Index;
