@@ -1,20 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useApp } from '../contexts/AppContext';
 import { ArrowRight, Shield, Clock, MapPin, Heart, Stethoscope, UserCheck, Calendar, CreditCard } from 'lucide-react';
 
 const WelcomePage: React.FC = () => {
-  const { darkMode, t, setCurrentPage, setUser, language } = useApp();
-  const [showLogin, setShowLogin] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [isRegister, setIsRegister] = useState(false);
-
-  const handleAuth = (e: React.FormEvent) => {
-    e.preventDefault();
-    setUser({ id: '1', fullName: name || 'User', email, phone: '+237 6XX XXX XXX' });
-    setCurrentPage('symptoms');
-  };
+  const { darkMode, t, setCurrentPage, language } = useApp();
 
   const features = [
     { icon: Clock, title: language === 'fr' ? 'Gagnez du Temps' : 'Save Time', desc: language === 'fr' ? 'Plus de longues files' : 'No more long queues' },
@@ -44,8 +33,14 @@ const WelcomePage: React.FC = () => {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-b from-green-50 to-white'}`}>
+      
+      {/* Hero Section */}
       <div className="relative h-[50vh] overflow-hidden">
-        <img src="https://d64gsuwffb70l.cloudfront.net/692db78c383879166ccc73e9_1764608413301_99c6de1b.webp" alt="Hospital" className="w-full h-full object-cover" />
+        <img 
+          src="https://d64gsuwffb70l.cloudfront.net/692db78c383879166ccc73e9_1764608413301_99c6de1b.webp" 
+          alt="Hospital" 
+          className="w-full h-full object-cover" 
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
           <div className="flex items-center gap-2 mb-2">
@@ -58,6 +53,7 @@ const WelcomePage: React.FC = () => {
       </div>
 
       <div className="p-4 -mt-6 relative z-10">
+
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-4">
           {stats.map((s, i) => (
@@ -91,47 +87,31 @@ const WelcomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Card */}
+        {/* Features + Login Button */}
         <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-xl p-5`}>
-          {!showLogin ? (
-            <>
-              <div className="grid grid-cols-3 gap-3 mb-5">
-                {features.map((f, i) => (
-                  <div key={i} className="text-center">
-                    <div className="w-11 h-11 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-2">
-                      <f.icon className="text-green-600" size={22} />
-                    </div>
-                    <p className={`text-xs font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>{f.title}</p>
-                    <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{f.desc}</p>
-                  </div>
-                ))}
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {features.map((f, i) => (
+              <div key={i} className="text-center">
+                <div className="w-11 h-11 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-2">
+                  <f.icon className="text-green-600" size={22} />
+                </div>
+                <p className={`text-xs font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>{f.title}</p>
+                <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{f.desc}</p>
               </div>
-              <button onClick={() => setShowLogin(true)} className="w-full bg-green-600 text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition">
-                {t('login')} / {t('register')} <ArrowRight size={18} />
-              </button>
-              <p className={`text-center text-xs mt-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                {language === 'fr' ? 'Soins modernes pour les Camerounais' : 'Modern care for Cameroonians'}
-              </p>
-            </>
-          ) : (
-            <form onSubmit={handleAuth} className="space-y-3">
-              <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-                {isRegister ? t('register') : t('login')}
-              </h2>
-              {isRegister && (
-                <input type="text" placeholder={language === 'fr' ? 'Nom complet' : 'Full Name'} value={name} onChange={(e) => setName(e.target.value)} className={`w-full p-3 border rounded-lg ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`} required />
-              )}
-              <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className={`w-full p-3 border rounded-lg ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`} required />
-              <input type="password" placeholder={language === 'fr' ? 'Mot de passe' : 'Password'} value={password} onChange={(e) => setPassword(e.target.value)} className={`w-full p-3 border rounded-lg ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`} required />
-              <button type="submit" className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold">{isRegister ? t('register') : t('login')}</button>
-              <button type="button" onClick={() => setIsRegister(!isRegister)} className="w-full text-green-600 text-sm">
-                {isRegister ? (language === 'fr' ? 'Déjà inscrit? Connexion' : 'Already have account? Login') : (language === 'fr' ? 'Nouveau? S\'inscrire' : 'New user? Register')}
-              </button>
-              <button type="button" onClick={() => setShowLogin(false)} className={`w-full text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                {language === 'fr' ? 'Retour' : 'Back'}
-              </button>
-            </form>
-          )}
+            ))}
+          </div>
+
+          {/* Login/Register Button */}
+          <button 
+            onClick={() => setCurrentPage("login")}
+            className="w-full bg-green-600 text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition"
+          >
+            {t('login')} / {t('register')} <ArrowRight size={18} />
+          </button>
+
+          <p className={`text-center text-xs mt-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            {language === 'fr' ? 'Soins modernes pour les Camerounais' : 'Modern care for Cameroonians'}
+          </p>
         </div>
 
         {/* Pricing Info */}
@@ -160,13 +140,16 @@ const WelcomePage: React.FC = () => {
                 <Stethoscope size={24} />
               </div>
               <div className="text-left">
-                <p className="font-semibold">{language === 'fr' ? 'Hôpital Jamot Yaoundé' : 'Hôpital Jamot Yaoundé'}</p>
-                <p className="text-xs opacity-80">{language === 'fr' ? 'Voir nos médecins spécialistes' : 'View our specialist doctors'}</p>
+                <p className="font-semibold">Hôpital Jamot Yaoundé</p>
+                <p className="text-xs opacity-80">
+                  {language === 'fr' ? 'Voir nos médecins spécialistes' : 'View our specialist doctors'}
+                </p>
               </div>
             </div>
             <ArrowRight size={20} />
           </div>
         </button>
+
       </div>
     </div>
   );
