@@ -21,8 +21,7 @@ import EmergencyPage from "./components/EmergencyPage";
 import ProfilePage from "./components/ProfilePage";
 import AboutPage from "./components/AboutPage";
 import PharmacyPage from "./components/PharmacyPage";
-import SymptomChecker from "./components/SymptomChecker";
-import LoginPage from "./pages/LoginPage";
+import SymptomChecker from "./components/SymptomChecker";;
 
 const queryClient = new QueryClient();
 
