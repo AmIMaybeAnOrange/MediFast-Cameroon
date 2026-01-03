@@ -16,7 +16,7 @@ const LoginPage = () => {
     >
       {/* Back Button */}
       <button
-        onClick={() => setCurrentPage("welcome")}
+        onClick={() => navigate("/")}
         className="absolute top-4 left-4 flex items-center gap-1 text-green-600"
       >
         <ArrowLeft size={20} />
