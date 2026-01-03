@@ -6,11 +6,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/react";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import WelcomePage from "./pages/WelcomePage";
+import Index from "./components/Index";
+import NotFound from "./components/NotFound";
+import LoginPage from "./components/LoginPage";
+import RegisterPage from "./components/RegisterPage";
+import WelcomePage from "./components/WelcomePage";
 
 const queryClient = new QueryClient();
 
