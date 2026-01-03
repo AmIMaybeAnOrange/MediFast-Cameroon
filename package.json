@@ -68,6 +68,7 @@
     "zod": "^3.23.8",
     "leaflet": "^1.9.4",
     "react-leaflet": "^4.2.1"
+    "firebase": "^10.x.x"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
