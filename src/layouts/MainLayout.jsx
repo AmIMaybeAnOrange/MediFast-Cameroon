@@ -31,4 +31,4 @@ const AppShellLayout = () => {
   );
 };
 
-export default AppShellLayout;
+export default MainLayout;
