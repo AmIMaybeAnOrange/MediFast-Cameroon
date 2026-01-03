@@ -6,7 +6,7 @@ const BottomNav: React.FC = () => {
   const { darkMode, currentPage, setCurrentPage, language } = useApp();
 
   const navItems = [
-    { id: 'welcome', icon: Home, label: language === 'fr' ? 'Accueil' : 'Home' },
+    { id: '/', icon: Home, label: language === 'fr' ? 'Accueil' : 'Home' },
     { id: 'doctors', icon: UserCheck, label: language === 'fr' ? 'Médecins' : 'Doctors' },
     { id: 'appointments', icon: Calendar, label: language === 'fr' ? 'RDV' : 'Appts' },
     { id: 'emergency', icon: AlertTriangle, label: language === 'fr' ? 'Urgence' : 'Emergency' },
@@ -23,7 +23,7 @@ const BottomNav: React.FC = () => {
           return (
             <button
               key={item.id}
-              onClick={() => setCurrentPage(item.id)}
+              onClick={() => navigate(item.id)}
               className={`flex flex-col items-center py-1 px-2 rounded-lg transition-all ${
                 isActive
                   ? isEmergency
