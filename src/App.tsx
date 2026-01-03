@@ -12,6 +12,10 @@ import RegisterPage from "./pages/RegisterPage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { AppProvider } from "./contexts/AppContext";
+import DoctorsPage from "./pages/DoctorsPage";
+import BookPage from "./components/BookAppointment";
+import HospitalsPage from "./components/HospitalLocator";
+import PaymentPage from "./components/PaymentPage";
 
 
 const queryClient = new QueryClient();
@@ -29,6 +33,10 @@ const App = () => (
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="*" element={<NotFound />} />
+              <Route path="/doctors" element={<DoctorsPage />} />
+              <Route path="/book" element={<BookPage />} />
+              <Route path="/hospitals" element={<HospitalsPage />} />
+              <Route path="/payment" element={<PaymentPage />} />
             </Routes>
           </BrowserRouter>
           <Analytics />
