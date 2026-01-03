@@ -12,12 +12,6 @@ const WelcomePage: React.FC = () => {
   const [name, setName] = useState('');
   const [isRegister, setIsRegister] = useState(false);
 
-  const handleAuth = (e: React.FormEvent) => {
-    e.preventDefault();
-    setUser({ id: '1', fullName: name || 'User', email, phone: '+237 6XX XXX XXX' });
-    setCurrentPage('symptoms');
-  };
-
   const features = [
     { icon: Clock, title: language === 'fr' ? 'Gagnez du Temps' : 'Save Time', desc: language === 'fr' ? 'Plus de longues files' : 'No more long queues' },
     { icon: MapPin, title: language === 'fr' ? 'Trouvez des Soins' : 'Find Care', desc: language === 'fr' ? 'Hôpitaux proches' : 'Nearest hospitals' },
@@ -108,7 +102,7 @@ const WelcomePage: React.FC = () => {
                   </div>
                 ))}
               </div>
-              <button onClick={() => setShowLogin(true)} className="w-full bg-green-600 text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition">
+              <button onClick={() => navigate("/login")} className="w-full bg-green-600 text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition">
                 {t('login')} / {t('register')} <ArrowRight size={18} />
               </button>
               <p className={`text-center text-xs mt-3 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
