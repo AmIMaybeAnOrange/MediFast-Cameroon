@@ -11,6 +11,8 @@ import WelcomePage from "./pages/WelcomePage";
 import RegisterPage from "./pages/RegisterPage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import { AppProvider } from "./contexts/AppContext";
+
 
 const queryClient = new QueryClient();
 
