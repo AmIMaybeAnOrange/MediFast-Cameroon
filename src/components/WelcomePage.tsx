@@ -1,9 +1,12 @@
 import React from 'react';
 import { useApp } from '../contexts/AppContext';
+import { useNavigate } from "react-router-dom";
 import { ArrowRight, Shield, Clock, MapPin, Heart, Stethoscope, UserCheck, Calendar, CreditCard } from 'lucide-react';
 
 const WelcomePage: React.FC = () => {
   const { darkMode, t, setCurrentPage, language } = useApp();
+
+  const navigate = useNavigate();
 
   const features = [
     { icon: Clock, title: language === 'fr' ? 'Gagnez du Temps' : 'Save Time', desc: language === 'fr' ? 'Plus de longues files' : 'No more long queues' },
@@ -103,7 +106,7 @@ const WelcomePage: React.FC = () => {
 
           {/* Login/Register Button */}
           <button 
-            onClick={() => setCurrentPage("LoginPage")}
+            onClick={() => navigate("/login")}
             className="w-full bg-green-600 text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition"
           >
             {t('login')} / {t('register')} <ArrowRight size={18} />
