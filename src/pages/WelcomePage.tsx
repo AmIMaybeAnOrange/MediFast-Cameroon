@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
+import { useNavigate } from "react-router-dom";
 import { ArrowRight, Shield, Clock, MapPin, Heart, Stethoscope, UserCheck, Calendar, CreditCard } from 'lucide-react';
 
 const WelcomePage: React.FC = () => {
+  const navigate = useNavigate();
   const { darkMode, t, setCurrentPage, setUser, language } = useApp();
   const [showLogin, setShowLogin] = useState(false);
   const [email, setEmail] = useState('');
