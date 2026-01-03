@@ -35,12 +35,12 @@ const App = () => (
               <Routes>
             
                 {/* Public pages */}
-                <Route path="/" element={<WelcomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
             
                 {/* Layout-wrapped pages */}
                 <Route element={<MainLayout />}>
+                  <Route path="/" element={<WelcomePage />} />
                   <Route path="/doctors" element={<DoctorsPage />} />
                   <Route path="/book" element={<BookPage />} />
                   <Route path="/appointments" element={<AppointmentsList />} />
