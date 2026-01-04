@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogIn } from "lucide-react";
 import { auth } from "../lib/firebase"; 
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 const LoginPage = () => {
   const { darkMode, t, setCurrentPage, language, setUser } = useApp();
@@ -14,7 +16,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async () => {
+const handleLogin = async () => {
   setError("");
   setLoading(true);
 
@@ -28,13 +30,26 @@ const LoginPage = () => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Save user in context
-    setUser({
-      id: user.uid,
-      email: user.email,
-    });
+    // Fetch Firestore profile
+    const userDoc = await getDoc(doc(db, "users", user.uid));
 
-    navigate("/"); // or wherever you want
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      setUser({
+        id: user.uid,
+        email: user.email,
+        fullName: data.fullName,
+        phone: data.phone,
+        photoURL: data.photoURL || null,
+      });
+    } else {
+      setUser({
+        id: user.uid,
+        email: user.email,
+      });
+    }
+
+    navigate("/");
   } catch (err) {
     setError("Invalid email or password");
   } finally {
@@ -42,19 +57,6 @@ const LoginPage = () => {
   }
 };
 
-  const handleForgotPassword = async () => {
-  if (!email) {
-    setError("Please enter your email first");
-    return;
-  }
-
-  try {
-    await sendPasswordResetEmail(auth, email);
-    setError("Password reset email sent");
-  } catch (err) {
-    setError("Unable to send reset email");
-  }
-};
 
   return (
     <div
