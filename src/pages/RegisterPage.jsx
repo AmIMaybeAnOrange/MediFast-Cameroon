@@ -3,7 +3,7 @@ import { useApp } from "../contexts/AppContext";
 import { ArrowLeft, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase"; // your firebase config
+import { auth } from "../lib/firebase"; 
 
 const RegisterPage = () => {
   const { darkMode, t, language, setUser } = useApp();
