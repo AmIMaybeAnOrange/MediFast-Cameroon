@@ -6,7 +6,7 @@ import { auth } from "../lib/firebase";
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 
 const LoginPage = () => {
-  const { darkMode, t, setCurrentPage, language } = useApp();
+  const { darkMode, t, setCurrentPage, language, setUser } = useApp();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
