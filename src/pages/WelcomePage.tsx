@@ -47,6 +47,7 @@ const WelcomePage: React.FC = () => {
     setShowLogin(false); 
     setIsRegister(false);
     setShowLogoutModal(false);
+    console.log("Logout clicked");
     navigate("/");
   };
   
