@@ -3,6 +3,7 @@ import LogoutModal from "../components/LogoutModal";
 import { useApp } from '../contexts/AppContext';
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
+import { auth } from "../lib/firebase";
 import { ArrowRight, Shield, Clock, MapPin, Heart, Stethoscope, UserCheck, Calendar, CreditCard } from 'lucide-react';
 
 const WelcomePage: React.FC = () => {
@@ -47,7 +48,6 @@ const WelcomePage: React.FC = () => {
     setShowLogin(false); 
     setIsRegister(false);
     setShowLogoutModal(false);
-    console.log("Logout clicked");
     navigate("/");
   };
   
