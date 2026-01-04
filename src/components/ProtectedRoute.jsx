@@ -5,7 +5,7 @@ const ProtectedRoute = ({ children }) => {
   const { user } = useApp();
 
   if (!user) {
-    return <Navigate to="/" replace state={{ message: "Please log in first" }} />;
+    return <Navigate to="/RequireLogin" replace state={{ message: "Please log in first" }} />;
   }
 
   return children;
