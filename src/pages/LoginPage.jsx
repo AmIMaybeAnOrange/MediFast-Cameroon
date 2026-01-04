@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useApp } from "../contexts/AppContext";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogIn } from "lucide-react";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase"; 
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../lib/firebase";
@@ -15,8 +14,6 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
   setError("");
