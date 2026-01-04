@@ -22,6 +22,7 @@ const LogoutModal = ({ open, onConfirm, onCancel, darkMode, language }) => {
 
         <div className="flex gap-3">
           <button
+            type="button"
             onClick={onCancel}
             className="flex-1 py-2 rounded-lg border border-gray-400"
           >
@@ -29,6 +30,7 @@ const LogoutModal = ({ open, onConfirm, onCancel, darkMode, language }) => {
           </button>
 
           <button
+            type="button"
             onClick={onConfirm}
             className="flex-1 py-2 rounded-lg bg-red-600 text-white"
           >
