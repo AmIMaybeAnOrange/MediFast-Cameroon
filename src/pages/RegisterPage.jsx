@@ -18,6 +18,7 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
 
@@ -32,6 +33,7 @@ const RegisterPage = () => {
   return;
 }
 
+    setLoading(true);
     
   try {
           if (password !== confirmPassword) {
@@ -55,9 +57,10 @@ const RegisterPage = () => {
     });
 
     navigate("/about");
-  } catch (error: any) {
+  } catch (error) {
     setError(error.message);
   }
+    finally { setLoading(false); }
 };
 
 
@@ -207,10 +210,14 @@ const RegisterPage = () => {
         {/* Register Button */}
         <button
           onClick={handleRegister}
-          className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition"
+          disabled={loading}
+          className={`w-full bg-green-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition ${
+            loading ? "opacity-70 cursor-not-allowed" : "hover:bg-green-700"
+          }`}
         >
           <UserPlus size={20} />
-          {t("register")}
+        
+          {loading ? "Registering..." : t("register")}
         </button>
 
         {/* Already have account */}
