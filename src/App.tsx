@@ -23,6 +23,7 @@ import AboutPage from "./components/AboutPage";
 import PharmacyPage from "./components/PharmacyPage";
 import SymptomChecker from "./components/SymptomChecker";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RequireLoginPage from "./pages/RequireLoginPage";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
                 {/* Public pages */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/RequireLogin" element={<RequireLoginPage />} />
             
                 {/* Layout-wrapped pages */}
                 <Route element={<MainLayout />}>
