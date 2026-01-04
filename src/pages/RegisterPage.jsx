@@ -64,7 +64,7 @@ const RegisterPage = () => {
 };
 
 
-  const checkPasswordStrength = (value: string) => {
+  const checkPasswordStrength = (value) => {
   if (value.length < 6) return "weak";
   if (!/\d/.test(value)) return "medium";
   if (!/[!@#$%^&*]/.test(value)) return "strong";
