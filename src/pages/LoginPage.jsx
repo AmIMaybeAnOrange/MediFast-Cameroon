@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogIn } from "lucide-react";
 import { auth } from "../lib/firebase"; 
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../lib/firebase";
 
 const LoginPage = () => {
   const { darkMode, t, setCurrentPage, language } = useApp();
