@@ -43,6 +43,8 @@ const WelcomePage: React.FC = () => {
     await signOut(auth);
     setUser(null);
     navigate("/");
+    setShowLogin(false); 
+    setIsRegister(false);
   };
   
   return (
