@@ -4,6 +4,8 @@ import { ArrowLeft, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase"; 
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../lib/firebase"; 
 
 const RegisterPage = () => {
   const { darkMode, t, language, setUser } = useApp();
@@ -55,6 +57,13 @@ const RegisterPage = () => {
       email: user.email,
       phone,
     });
+  await setDoc(doc(db, "users", user.uid), {
+    fullName,
+    email: user.email,
+    phone,
+    createdAt: new Date(),
+  });
+
 
     navigate("/about");
   } catch (error) {
