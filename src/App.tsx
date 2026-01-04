@@ -21,7 +21,8 @@ import EmergencyPage from "./components/EmergencyPage";
 import ProfilePage from "./components/ProfilePage";
 import AboutPage from "./components/AboutPage";
 import PharmacyPage from "./components/PharmacyPage";
-import SymptomChecker from "./components/SymptomChecker";;
+import SymptomChecker from "./components/SymptomChecker";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -43,11 +44,11 @@ const App = () => (
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<WelcomePage />} />
                   <Route path="/doctors" element={<DoctorsPage />} />
-                  <Route path="/book" element={<BookPage />} />
-                  <Route path="/appointments" element={<AppointmentsList />} />
+                  <Route path="/book" element={<ProtectedRoute> <BookPage /></ProtectedRoute>} />
+                  <Route path="/appointments" element={<ProtectedRoute><AppointmentsList /></ProtectedRoute>} />
                   <Route path="/emergency" element={<EmergencyPage />} />
-                  <Route path="/payment" element={<PaymentPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/pharmacy" element={<PharmacyPage />} />
                   <Route path="/hospitals" element={<HospitalsPage />} />
