@@ -26,6 +26,22 @@ const handleLogin = async () => {
     return;
   }
 
+  const handleForgotPassword = async () => {
+  setError("");
+
+  if (!email) {
+    setError("Please enter your email first");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    setError("Password reset email sent");
+  } catch (err) {
+    setError("Unable to send reset email");
+  }
+};
+
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
