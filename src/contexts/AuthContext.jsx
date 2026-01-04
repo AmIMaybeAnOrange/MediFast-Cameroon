@@ -17,6 +17,24 @@ export function AuthProvider({ children }) {
     return () => unsub();
   }, []);
 
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    if (firebaseUser) {
+      setUser({
+        id: firebaseUser.uid,
+        email: firebaseUser.email,
+        fullName: firebaseUser.displayName || null,
+        photoURL: firebaseUser.photoURL || null,
+      });
+    } else {
+      setUser(null);
+    }
+  });
+
+  return () => unsubscribe();
+}, []);
+
+
   return (
     <AuthContext.Provider value={{ user }}>
       {!loading && children}
