@@ -44,10 +44,10 @@ const WelcomePage: React.FC = () => {
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
-    navigate("/");
     setShowLogin(false); 
     setIsRegister(false);
     setShowLogoutModal(false);
+    navigate("/");
   };
   
   return (
