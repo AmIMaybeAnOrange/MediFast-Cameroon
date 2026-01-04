@@ -2,12 +2,63 @@ import React, { useState } from "react";
 import { useApp } from "../contexts/AppContext";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogIn } from "lucide-react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../lib/firebase"; 
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../lib/firebase";
 
 const LoginPage = () => {
   const { darkMode, t, setCurrentPage, language } = useApp();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+  setError("");
+  setLoading(true);
+
+  if (!email || !password) {
+    setError("Please enter email and password");
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Save user in context
+    setUser({
+      id: user.uid,
+      email: user.email,
+    });
+
+    navigate("/"); // or wherever you want
+  } catch (err) {
+    setError("Invalid email or password");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const handleForgotPassword = async () => {
+  if (!email) {
+    setError("Please enter your email first");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    setError("Password reset email sent");
+  } catch (err) {
+    setError("Unable to send reset email");
+  }
+};
 
   return (
     <div
@@ -52,25 +103,49 @@ const LoginPage = () => {
         />
 
         {/* Password */}
-        <input
-          type="password"
-          placeholder={language === "fr" ? "Mot de passe" : "Password"}
-          className={`w-full p-3 mb-4 border rounded-lg ${
-            darkMode
-              ? "bg-gray-700 border-gray-600 text-white"
-              : "border-gray-300"
-          }`}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder={language === "fr" ? "Mot de passe" : "Password"}
+            className={`w-full p-3 pr-10 border rounded-lg ${
+              darkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-300"
+            }`}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
+
+        <button
+          onClick={handleForgotPassword}
+          className="text-green-600 text-sm mb-3"
+        >
+          {language === "fr" ? "Mot de passe oublié?" : "Forgot password?"}
+        </button>
+
+        {error && (
+            <p className="text-red-500 text-sm mb-3 text-center">
+              {error}
+            </p>
+          )}
 
         {/* Login Button */}
-        <button
-          onClick={() => console.log("TODO: Firebase login")}
-          className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition"
+         <button
+          onClick={handleLogin}
+          disabled={loading}
+          className={`w-full bg-green-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition ${
+            loading ? "opacity-70 cursor-not-allowed" : "hover:bg-green-700"
+          }`}
         >
           <LogIn size={20} />
-          {t("login")}
+          {loading ? "Logging in..." : t("login")}
         </button>
 
         {/* Register Link */}
