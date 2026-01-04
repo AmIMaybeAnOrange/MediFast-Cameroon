@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LogoutModal from "../components/LogoutModal";
 import { useApp } from '../contexts/AppContext';
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
@@ -12,6 +13,7 @@ const WelcomePage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [isRegister, setIsRegister] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const features = [
     { icon: Clock, title: language === 'fr' ? 'Gagnez du Temps' : 'Save Time', desc: language === 'fr' ? 'Plus de longues files' : 'No more long queues' },
@@ -45,6 +47,7 @@ const WelcomePage: React.FC = () => {
     navigate("/");
     setShowLogin(false); 
     setIsRegister(false);
+    setShowLogoutModal(false);
   };
   
   return (
@@ -166,10 +169,9 @@ const WelcomePage: React.FC = () => {
                   <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
                     {user.email}
                   </p>
-                </div>
-              
+                </div>     
                 <button
-                  onClick={handleLogout}
+                  onClick={() => setShowLogoutModal(true)}
                   className="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition"
                 >
                   {language === "fr" ? "Se déconnecter" : "Logout"}
@@ -210,6 +212,14 @@ const WelcomePage: React.FC = () => {
             <ArrowRight size={20} />
           </div>
         </button>
+        <LogoutModal
+            open={showLogoutModal}
+            onCancel={() => setShowLogoutModal(false)}
+            onConfirm={handleLogout}
+            darkMode={darkMode}
+            language={language}
+          />
+
       </div>
     </div>
   );
