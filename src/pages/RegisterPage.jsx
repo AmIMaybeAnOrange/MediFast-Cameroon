@@ -65,7 +65,7 @@ const RegisterPage = () => {
   });
 
 
-    navigate("/about");
+    navigate("/");
   } catch (error) {
     setError(error.message);
   }
