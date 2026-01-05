@@ -1,9 +1,6 @@
 import { Heart } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
-export default function HeroBanner({ darkMode }) {
-  const { t } = useTranslation();
-
+export default function HeroSection({ darkMode, t }) {
   return (
     <div className="relative h-[50vh] overflow-hidden">
       <img
@@ -12,16 +9,12 @@ export default function HeroBanner({ darkMode }) {
         className="w-full h-full object-cover"
       />
 
-      {/* Black gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
-      {/* Text content */}
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
         <div className="flex items-center gap-2 mb-2">
           <Heart className="text-red-400" size={20} />
-          <span className="text-sm opacity-80">
-            {t("healthTechPioneers") || "HealthTech Pioneers"}
-          </span>
+          <span className="text-sm opacity-80">HealthTech Pioneers</span>
         </div>
 
         <h1 className="text-4xl font-bold mb-1">MboaMed</h1>
