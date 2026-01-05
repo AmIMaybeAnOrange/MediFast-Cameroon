@@ -54,7 +54,7 @@ const WelcomePage: React.FC = () => {
   
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-b from-green-50 to-white'}`}>
-    <HeroBanner darkMode={darkMode} />
+    <HeroSection darkMode={darkMode} t={t} />
       <div className="p-4 -mt-6 relative z-10">
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-4">
