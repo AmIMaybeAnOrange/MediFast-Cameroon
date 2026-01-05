@@ -148,12 +148,19 @@ const RegisterPage = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        {/* Password */}
-       <div className="relative">
+      {/* Password */}
+      <div className="mb-3">
+        <label className={`text-sm font-medium mb-1 block ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+          {language === "fr" ? "Mot de passe" : "Password"}
+        </label>
+      
+        <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
-            className={`w-full p-3 pr-10 border rounded-lg ${
-              darkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-300"
+            className={`w-full p-3 pr-12 rounded-lg border focus:ring-2 transition ${
+              darkMode
+                ? "bg-gray-700 border-gray-600 text-white focus:ring-green-600"
+                : "border-gray-300 focus:ring-green-500"
             }`}
             value={password}
             onChange={(e) => {
@@ -162,59 +169,86 @@ const RegisterPage = () => {
               setPasswordStrength(checkPasswordStrength(value));
             }}
           />
-        
+      
+          {/* Eye Icon */}
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
           >
-            {showPassword ? "Hide" : "Show"}
+            {showPassword ? "🙈" : "👁️"}
           </button>
         </div>
       
-
-        {/*password strength*/}
+        {/* Strength Bar */}
         {password && (
-          <p className={`text-sm mb-2 ${
-            passwordStrength === "weak" ? "text-red-500" :
-            passwordStrength === "medium" ? "text-yellow-500" :
-            "text-green-500"
-          }`}>
-            {passwordStrength === "weak" && "Weak password"}
-            {passwordStrength === "medium" && "Medium strength"}
-            {passwordStrength === "strong" && "Strong password"}
-            {passwordStrength === "very-strong" && "Very strong password"}
-          </p>
+          <div className="mt-2">
+            <div className="h-1 w-full bg-gray-300 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all ${
+                  passwordStrength === "weak"
+                    ? "bg-red-500 w-1/4"
+                    : passwordStrength === "medium"
+                    ? "bg-yellow-500 w-2/4"
+                    : passwordStrength === "strong"
+                    ? "bg-green-500 w-3/4"
+                    : "bg-green-700 w-full"
+                }`}
+              ></div>
+            </div>
+      
+            <p
+              className={`text-xs mt-1 ${
+                passwordStrength === "weak"
+                  ? "text-red-500"
+                  : passwordStrength === "medium"
+                  ? "text-yellow-500"
+                  : "text-green-500"
+              }`}
+            >
+              {passwordStrength === "weak" && "Weak password"}
+              {passwordStrength === "medium" && "Medium strength"}
+              {passwordStrength === "strong" && "Strong password"}
+              {passwordStrength === "very-strong" && "Very strong password"}
+            </p>
+          </div>
         )}
+      </div>
 
-        {/*Check password*/}
-        <div className="relative">
-          <input
-            type={showConfirmPassword ? "text" : "password"}
-            className={`w-full p-3 pr-10 border rounded-lg ${
-            darkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-300"
-            }`}
-
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+        {/* Confirm Password */}
+        <div className="mb-3">
+          <label className={`text-sm font-medium mb-1 block ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+            {language === "fr" ? "Confirmer le mot de passe" : "Confirm Password"}
+          </label>
         
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-          >
-            {showConfirmPassword ? "Hide" : "Show"}
-          </button>
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              className={`w-full p-3 pr-12 rounded-lg border focus:ring-2 transition ${
+                darkMode
+                  ? "bg-gray-700 border-gray-600 text-white focus:ring-green-600"
+                  : "border-gray-300 focus:ring-green-500"
+              }`}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+        
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showConfirmPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
         </div>
-
-        {/*Show error*/}
-        {error && (
-          <p className="text-red-500 text-sm mb-3 text-center">
-            {error}
-          </p>
-        )}
-
+        
+                {/*Show error*/}
+                {error && (
+                  <p className="text-red-500 text-sm mb-3 text-center">
+                    {error}
+                  </p>
+                )}
         
         {/* Register Button */}
         <button
